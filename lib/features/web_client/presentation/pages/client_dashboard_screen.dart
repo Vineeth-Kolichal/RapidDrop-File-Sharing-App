@@ -116,7 +116,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
 
     return Scaffold(
       backgroundColor: appColors?.surfaceColor,
-      appBar: AppBar(title: const Text('File Sharing Client')),
+      appBar: AppBar(title: const Text('Rapid Drop Client')),
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
@@ -323,7 +323,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Host Files', style: context.titleMedium()),
+                        Text('Shared Files', style: context.titleMedium()),
                         IconButton(
                           icon: const Icon(Icons.refresh),
                           onPressed: () {
@@ -335,6 +335,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                       ],
                     ),
                   ),
+                  Divider(),
 
                   // Files List
                   Expanded(

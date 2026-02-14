@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<ClientBloc>()),
       ],
       child: MaterialApp(
-        title: "File Sharing",
+        title: "RapidDrop",
         themeMode: ThemeMode.system,
         theme: theme.light(),
         darkTheme: theme.dark(),
