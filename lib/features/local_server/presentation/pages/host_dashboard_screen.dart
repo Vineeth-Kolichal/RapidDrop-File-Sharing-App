@@ -16,6 +16,8 @@ class HostDashboardScreen extends StatefulWidget {
 }
 
 class _HostDashboardScreenState extends State<HostDashboardScreen> {
+  final Set<String> _downloadedFiles = {};
+
   @override
   void initState() {
     super.initState();
@@ -414,6 +416,10 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
 
       await sourceFile.copy(targetPath);
 
+      setState(() {
+        _downloadedFiles.add(file.name);
+      });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -473,13 +479,15 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                   '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
                 ),
                 trailing: isUploaded
-                    ? IconButton(
-                        icon: const Icon(Icons.download),
-                        tooltip: 'Save to Downloads',
-                        onPressed: () => _saveToDownloads(file),
-                      )
+                    ? _downloadedFiles.contains(file.name)
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : IconButton(
+                              icon: const Icon(Icons.download),
+                              tooltip: 'Save to Downloads',
+                              onPressed: () => _saveToDownloads(file),
+                            )
                     : IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const Icon(Icons.close),
                         tooltip: 'Stop Sharing',
                         onPressed: () {
                           context.read<ServerBloc>().add(

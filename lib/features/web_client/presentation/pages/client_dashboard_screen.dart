@@ -17,6 +17,7 @@ class ClientDashboardScreen extends StatefulWidget {
 
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   final TextEditingController _pinController = TextEditingController();
+  final Set<String> _downloadedFiles = {};
 
   @override
   void dispose() {
@@ -101,6 +102,10 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
         ..style.display = 'none';
 
       anchor.click();
+
+      setState(() {
+        _downloadedFiles.add(filename);
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -454,6 +459,8 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                   );
                 },
               )
+            : _downloadedFiles.contains(file.name)
+            ? const Icon(Icons.check_circle, color: Colors.green)
             : IconButton(
                 icon: const Icon(Icons.download),
                 onPressed: () {
