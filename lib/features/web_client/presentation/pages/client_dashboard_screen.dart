@@ -71,6 +71,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       }
 
       if (mounted) {
+        isHostFiles.value = false;
         context.read<ClientBloc>().add(ClientEvent.uploadFile(fileEntity));
       }
     }
@@ -295,6 +296,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                           );
                         }
                         if (mounted) {
+                          isHostFiles.value = false;
                           context.read<ClientBloc>().add(
                             ClientEvent.uploadFile(fileEntity),
                           );
@@ -368,7 +370,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                             Text(
                               dragging
                                   ? 'Release to upload'
-                                  : 'Drag & Drop files here or click to browse',
+                                  : 'Drag & Drop file here or click to browse',
                               textAlign: TextAlign.center,
                               style: context.bodyMedium().copyWith(
                                 color: context.appColors?.onSurface?.withValues(
