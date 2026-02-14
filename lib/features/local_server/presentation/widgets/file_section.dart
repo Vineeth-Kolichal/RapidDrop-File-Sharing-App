@@ -68,47 +68,54 @@ class _FileSectionState extends State<FileSection> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.files.isEmpty) return const SizedBox.shrink();
+    if (widget.files.isEmpty)
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.title, style: context.titleMedium()),
-            TextButton(
-              onPressed: () {
-                // TODO: Implement clear all
-              },
-              child: Text(
-                '${widget.files.length} files',
-                style: context.bodySmall(),
-              ),
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(widget.title, style: context.titleMedium()),
+                    TextButton(
+                      onPressed: () {
+                        // TODO: Implement clear all
+                      },
+                      child: Text(
+                        '${widget.files.length} files',
+                        style: context.bodySmall(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.8,
           ),
-          itemCount: widget.files.length,
-          itemBuilder: (context, index) {
-            final file = widget.files[index];
-            final isUploaded = file.isUploaded;
-            final isDownloaded = _downloadedFiles.contains(file.name);
+          SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.8,
+            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final file = widget.files[index];
+              final isUploaded = file.isUploaded;
+              final isDownloaded = _downloadedFiles.contains(file.name);
 
-            return _buildFileCard(context, file, isUploaded, isDownloaded);
-          },
-        ),
-        const SizedBox(height: 32),
-      ],
+              return _buildFileCard(context, file, isUploaded, isDownloaded);
+            }, childCount: widget.files.length),
+          ),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+        ],
+      ),
     );
   }
 

@@ -151,27 +151,21 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
           return Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ConnectionDetailsCard(serverInfo: serverInfo),
-                      const SizedBox(height: 16),
-                      ServerStatsRow(serverInfo: serverInfo),
-                      const SizedBox(height: 16),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: isSharedByMe,
-                        builder: (context, isShared, _) {
-                          final sentFiles = serverInfo.sharedFiles
-                              .where((f) => !f.isUploaded)
-                              .toList();
-                          final receivedFiles = serverInfo.sharedFiles
-                              .where((f) => f.isUploaded)
-                              .toList();
-
-                          return Column(
-                            children: [
-                              Container(
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          ConnectionDetailsCard(serverInfo: serverInfo),
+                          const SizedBox(height: 16),
+                          ServerStatsRow(serverInfo: serverInfo),
+                          const SizedBox(height: 16),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: isSharedByMe,
+                            builder: (context, isShared, _) {
+                              return Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   color: context.appColors?.surfaceColor,
@@ -267,84 +261,88 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                                     ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              if (isShared)
-                                sentFiles.isNotEmpty
-                                    ? FileSection(
-                                        title: 'Shared from App',
-                                        files: sentFiles,
-                                      )
-                                    : Padding(
-                                        padding: const EdgeInsets.all(32.0),
-                                        child: Column(
-                                          children: [
-                                            Icon(
-                                              Icons.folder_open_outlined,
-                                              size: 64,
-                                              color: context
-                                                  .appColors
-                                                  ?.onSurface
-                                                  ?.withValues(alpha: 0.2),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              'No files shared yet',
-                                              style: context
-                                                  .bodyMedium()
-                                                  ?.copyWith(
-                                                    color: context
-                                                        .appColors
-                                                        ?.onSurface
-                                                        ?.withValues(
-                                                          alpha: 0.5,
-                                                        ),
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                              else
-                                receivedFiles.isNotEmpty
-                                    ? FileSection(
-                                        title: 'Received from Web',
-                                        files: receivedFiles,
-                                      )
-                                    : Padding(
-                                        padding: const EdgeInsets.all(32.0),
-                                        child: Column(
-                                          children: [
-                                            Icon(
-                                              Icons.move_to_inbox_outlined,
-                                              size: 64,
-                                              color: context
-                                                  .appColors
-                                                  ?.onSurface
-                                                  ?.withValues(alpha: 0.2),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              'No files received yet',
-                                              style: context
-                                                  .bodyMedium()
-                                                  ?.copyWith(
-                                                    color: context
-                                                        .appColors
-                                                        ?.onSurface
-                                                        ?.withValues(
-                                                          alpha: 0.5,
-                                                        ),
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                            ],
-                          );
-                        },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                        ]),
                       ),
-                    ],
-                  ),
+                    ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: isSharedByMe,
+                      builder: (context, isShared, _) {
+                        final sentFiles = serverInfo.sharedFiles
+                            .where((f) => !f.isUploaded)
+                            .toList();
+                        final receivedFiles = serverInfo.sharedFiles
+                            .where((f) => f.isUploaded)
+                            .toList();
+
+                        if (isShared) {
+                          if (sentFiles.isEmpty) {
+                            return SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.folder_open_outlined,
+                                      size: 64,
+                                      color: context.appColors?.onSurface
+                                          ?.withValues(alpha: 0.2),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No files shared yet',
+                                      style: context.bodyMedium()?.copyWith(
+                                        color: context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return FileSection(
+                            title: 'Shared from App',
+                            files: sentFiles,
+                          );
+                        } else {
+                          if (receivedFiles.isEmpty) {
+                            return SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.move_to_inbox_outlined,
+                                      size: 64,
+                                      color: context.appColors?.onSurface
+                                          ?.withValues(alpha: 0.2),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No files received yet',
+                                      style: context.bodyMedium()?.copyWith(
+                                        color: context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return FileSection(
+                            title: 'Received from Web',
+                            files: receivedFiles,
+                          );
+                        }
+                      },
+                    ),
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+                  ],
                 ),
               ),
               ValueListenableBuilder<bool>(
