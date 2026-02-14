@@ -148,160 +148,201 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
             return const ServerIdleView();
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                ConnectionDetailsCard(serverInfo: serverInfo),
-                const SizedBox(height: 16),
-                ServerStatsRow(serverInfo: serverInfo),
-                const SizedBox(height: 16),
-                ValueListenableBuilder<bool>(
-                  valueListenable: isSharedByMe,
-                  builder: (context, isShared, _) {
-                    final sentFiles = serverInfo.sharedFiles
-                        .where((f) => !f.isUploaded)
-                        .toList();
-                    final receivedFiles = serverInfo.sharedFiles
-                        .where((f) => f.isUploaded)
-                        .toList();
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      ConnectionDetailsCard(serverInfo: serverInfo),
+                      const SizedBox(height: 16),
+                      ServerStatsRow(serverInfo: serverInfo),
+                      const SizedBox(height: 16),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: isSharedByMe,
+                        builder: (context, isShared, _) {
+                          final sentFiles = serverInfo.sharedFiles
+                              .where((f) => !f.isUploaded)
+                              .toList();
+                          final receivedFiles = serverInfo.sharedFiles
+                              .where((f) => f.isUploaded)
+                              .toList();
 
-                    return Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: context.appColors?.surfaceColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color:
-                                  context.appColors?.onSurface?.withValues(
-                                    alpha: 0.1,
-                                  ) ??
-                                  Colors.grey,
-                            ),
-                          ),
-                          child: Row(
+                          return Column(
                             children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => isSharedByMe.value = true,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isShared
-                                          ? context.appColors?.primary
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Shared by me',
-                                      textAlign: TextAlign.center,
-                                      style: isShared
-                                          ? context.bodyMedium()?.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            )
-                                          : context.bodyMedium()?.copyWith(
-                                              color: context
-                                                  .appColors
-                                                  ?.onSurface
-                                                  ?.withValues(alpha: 0.6),
-                                            ),
-                                    ),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: context.appColors?.surfaceColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color:
+                                        context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.1) ??
+                                        Colors.grey,
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => isSharedByMe.value = false,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: !isShared
-                                          ? context.appColors?.primary
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Shared to me',
-                                      textAlign: TextAlign.center,
-                                      style: !isShared
-                                          ? context.bodyMedium()?.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            )
-                                          : context.bodyMedium()?.copyWith(
-                                              color: context
-                                                  .appColors
-                                                  ?.onSurface
-                                                  ?.withValues(alpha: 0.6),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => isSharedByMe.value = true,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: isShared
+                                                ? context.appColors?.primary
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
+                                          ),
+                                          child: Text(
+                                            'Shared by me',
+                                            textAlign: TextAlign.center,
+                                            style: isShared
+                                                ? context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      )
+                                                : context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: context
+                                                            .appColors
+                                                            ?.onSurface
+                                                            ?.withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                      ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => isSharedByMe.value = false,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: !isShared
+                                                ? context.appColors?.primary
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Shared to me',
+                                            textAlign: TextAlign.center,
+                                            style: !isShared
+                                                ? context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      )
+                                                : context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: context
+                                                            .appColors
+                                                            ?.onSurface
+                                                            ?.withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                      ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              const SizedBox(height: 16),
+                              if (isShared)
+                                sentFiles.isNotEmpty
+                                    ? FileSection(
+                                        title: 'Shared from App',
+                                        files: sentFiles,
+                                      )
+                                    : Padding(
+                                        padding: const EdgeInsets.all(32.0),
+                                        child: Text(
+                                          'No files shared yet',
+                                          style: context.bodyMedium(),
+                                        ),
+                                      )
+                              else
+                                receivedFiles.isNotEmpty
+                                    ? FileSection(
+                                        title: 'Received from Web',
+                                        files: receivedFiles,
+                                      )
+                                    : Padding(
+                                        padding: const EdgeInsets.all(32.0),
+                                        child: Text(
+                                          'No files received yet',
+                                          style: context.bodyMedium(),
+                                        ),
+                                      ),
                             ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ValueListenableBuilder<bool>(
+                valueListenable: isSharedByMe,
+                builder: (context, isShared, _) {
+                  if (!isShared) return const SizedBox.shrink();
+
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.appColors?.surfaceColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: SafeArea(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _pickAndAddFile,
+                          icon: const Icon(Icons.cloud_upload),
+                          label: const Text('Select Files to Share'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.appColors?.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        if (isShared)
-                          sentFiles.isNotEmpty
-                              ? FileSection(
-                                  title: 'Shared from App',
-                                  files: sentFiles,
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.all(32.0),
-                                  child: Text(
-                                    'No files shared yet',
-                                    style: context.bodyMedium(),
-                                  ),
-                                )
-                        else
-                          receivedFiles.isNotEmpty
-                              ? FileSection(
-                                  title: 'Received from Web',
-                                  files: receivedFiles,
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.all(32.0),
-                                  child: Text(
-                                    'No files received yet',
-                                    style: context.bodyMedium(),
-                                  ),
-                                ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable: isSharedByMe,
-        builder: (context, isShared, _) {
-          return BlocBuilder<ServerBloc, ServerState>(
-            builder: (context, state) {
-              final serverInfo = state.serverInfo;
-              if (serverInfo == null || !serverInfo.isRunning) {
-                return const SizedBox.shrink();
-              }
-              // Only show Add Files FAB if "Shared by me" is selected
-              if (!isShared) return const SizedBox.shrink();
-
-              return FloatingActionButton.extended(
-                onPressed: _pickAndAddFile,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Files'),
-              );
-            },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           );
         },
       ),
