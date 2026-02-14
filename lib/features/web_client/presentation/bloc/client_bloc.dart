@@ -55,7 +55,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
     await result.fold(
       (failure) async =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+          emit(state.copyWith(isLoading: false, error: failure.error)),
       (connectionInfo) async {
         emit(
           state.copyWith(
@@ -83,7 +83,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
     await result.fold(
       (failure) async =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+          emit(state.copyWith(isLoading: false, error: failure.error)),
       (connectionInfo) async {
         emit(
           state.copyWith(
@@ -130,7 +130,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       (failure) => emit(
         state.copyWith(
           isLoading: false,
-          error: event.silent ? null : failure.toString(),
+          error: event.silent ? null : failure.error,
         ),
       ),
       (fileList) => emit(
@@ -154,7 +154,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
     await result.fold(
       (failure) async =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+          emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) async {
         emit(state.copyWith(isLoading: false));
         // Refresh file list after upload
@@ -180,7 +180,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
     await result.fold(
       (failure) async =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+          emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) async {
         emit(state.copyWith(isLoading: false));
         // Refresh file list after deletion

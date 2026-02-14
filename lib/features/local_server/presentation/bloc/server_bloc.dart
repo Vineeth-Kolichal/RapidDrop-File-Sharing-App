@@ -57,8 +57,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     final result = await startServerUseCase(NoParams());
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (failure) => emit(state.copyWith(isLoading: false, error: failure.error)),
       (serverInfo) {
         emit(
           state.copyWith(isLoading: false, serverInfo: serverInfo, error: null),
@@ -80,8 +79,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     final result = await stopServerUseCase(NoParams());
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (failure) => emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) {
         _filesSubscription?.cancel();
         emit(state.copyWith(isLoading: false, serverInfo: null, error: null));
@@ -110,8 +108,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     );
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (failure) => emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) async {
         // No need to manually refresh - stream will handle it
         emit(state.copyWith(isLoading: false));
@@ -130,8 +127,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     );
 
     result.fold(
-      (failure) =>
-          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (failure) => emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) async {
         // No need to manually refresh - stream will handle it
         emit(state.copyWith(isLoading: false));
@@ -146,7 +142,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     final result = await getServerInfoUseCase(NoParams());
 
     result.fold(
-      (failure) => emit(state.copyWith(error: failure.toString())),
+      (failure) => emit(state.copyWith(error: failure.error)),
       (serverInfo) => emit(state.copyWith(serverInfo: serverInfo)),
     );
   }
