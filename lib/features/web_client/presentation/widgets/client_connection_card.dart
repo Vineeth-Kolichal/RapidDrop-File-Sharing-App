@@ -28,11 +28,14 @@ class ClientConnectionCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              //Connection indicator
               Container(
                 width: 12,
                 height: 12,
-                decoration: const BoxDecoration(
-                  color: Colors.green,
+                decoration: BoxDecoration(
+                  color: connectionInfo.isConnected
+                      ? Colors.green
+                      : Theme.of(context).colorScheme.error,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -40,7 +43,12 @@ class ClientConnectionCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Connected to', style: context.bodySmall()),
+                  Text(
+                    connectionInfo.isConnected
+                        ? 'Connected to'
+                        : 'Disconnected',
+                    style: context.bodySmall(),
+                  ),
                   Text(
                     connectionInfo.serverUrl ?? '',
                     style: context.titleMedium().copyWith(
