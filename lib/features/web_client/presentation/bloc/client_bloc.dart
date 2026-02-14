@@ -12,6 +12,7 @@ import '../../domain/usecases/upload_file_usecase.dart';
 import '../../domain/usecases/validate_pin_usecase.dart';
 
 import '../../domain/usecases/delete_file_usecase.dart';
+import '../../domain/usecases/listen_to_notifications_usecase.dart';
 
 part 'client_bloc.freezed.dart';
 part 'client_event.dart';
@@ -24,9 +25,9 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   final UploadFileUseCase uploadFileUseCase;
   final ValidatePinUseCase validatePinUseCase;
   final DeleteFileUseCase deleteFileUseCase;
+  final ListenToNotificationsUseCase listenToNotificationsUseCase;
 
-  Timer? _refreshTimer;
-  static const _refreshInterval = Duration(seconds: 3);
+  StreamSubscription? _notificationSubscription;
 
   ClientBloc(
     this.connectToServerUseCase,
@@ -34,6 +35,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     this.uploadFileUseCase,
     this.validatePinUseCase,
     this.deleteFileUseCase,
+    this.listenToNotificationsUseCase,
   ) : super(ClientState.initial()) {
     on<Connect>(_onConnect);
     on<ValidatePin>(_onValidatePin);
@@ -41,8 +43,18 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<FetchFiles>(_onFetchFiles);
     on<UploadFile>(_onUploadFile);
     on<DeleteFile>(_onDeleteFile);
+    on<UploadFile>(_onUploadFile);
+    on<DeleteFile>(_onDeleteFile);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
+    on<_NotificationReceived>(_onNotificationReceived);
+  }
+
+  void _onNotificationReceived(
+    _NotificationReceived event,
+    Emitter<ClientState> emit,
+  ) {
+    add(const ClientEvent.fetchFiles(silent: true));
   }
 
   Future<void> _onValidatePin(
@@ -189,21 +201,24 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     );
   }
 
-  void _onStartAutoRefresh(StartAutoRefresh event, Emitter<ClientState> emit) {
-    _refreshTimer?.cancel();
-    _refreshTimer = Timer.periodic(_refreshInterval, (_) {
-      add(const ClientEvent.fetchFiles(silent: true));
+  Future<void> _onStartAutoRefresh(
+    StartAutoRefresh event,
+    Emitter<ClientState> emit,
+  ) async {
+    await _notificationSubscription?.cancel();
+    _notificationSubscription = listenToNotificationsUseCase().listen((_) {
+      add(const ClientEvent.notificationReceived());
     });
   }
 
   void _onStopAutoRefresh(StopAutoRefresh event, Emitter<ClientState> emit) {
-    _refreshTimer?.cancel();
-    _refreshTimer = null;
+    _notificationSubscription?.cancel();
+    _notificationSubscription = null;
   }
 
   @override
   Future<void> close() {
-    _refreshTimer?.cancel();
+    _notificationSubscription?.cancel();
     return super.close();
   }
 }

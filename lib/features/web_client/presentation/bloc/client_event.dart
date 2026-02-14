@@ -11,4 +11,5 @@ class ClientEvent with _$ClientEvent {
   const factory ClientEvent.deleteFile(String filename) = DeleteFile;
   const factory ClientEvent.startAutoRefresh() = StartAutoRefresh;
   const factory ClientEvent.stopAutoRefresh() = StopAutoRefresh;
+  const factory ClientEvent.notificationReceived() = _NotificationReceived;
 }

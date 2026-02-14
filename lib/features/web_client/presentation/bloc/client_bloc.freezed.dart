@@ -55,7 +55,7 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,TResult Function( _NotificationReceived value)?  notificationReceived,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -66,7 +66,8 @@ return fetchFiles(_that);case UploadFile() when uploadFile != null:
 return uploadFile(_that);case DeleteFile() when deleteFile != null:
 return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived(_that);case _:
   return orElse();
 
 }
@@ -84,7 +85,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,required TResult Function( _NotificationReceived value)  notificationReceived,}){
 final _that = this;
 switch (_that) {
 case Connect():
@@ -95,7 +96,8 @@ return fetchFiles(_that);case UploadFile():
 return uploadFile(_that);case DeleteFile():
 return deleteFile(_that);case StartAutoRefresh():
 return startAutoRefresh(_that);case StopAutoRefresh():
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _NotificationReceived():
+return notificationReceived(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -112,7 +114,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,TResult? Function( _NotificationReceived value)?  notificationReceived,}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -123,7 +125,8 @@ return fetchFiles(_that);case UploadFile() when uploadFile != null:
 return uploadFile(_that);case DeleteFile() when deleteFile != null:
 return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived(_that);case _:
   return null;
 
 }
@@ -140,7 +143,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,TResult Function()?  notificationReceived,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -150,7 +153,8 @@ return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
 return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
 return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _NotificationReceived() when notificationReceived != null:
+return notificationReceived();case _:
   return orElse();
 
 }
@@ -168,7 +172,7 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,required TResult Function()  notificationReceived,}) {final _that = this;
 switch (_that) {
 case Connect():
 return connect(_that.ip,_that.port);case ValidatePin():
@@ -178,7 +182,8 @@ return fetchFiles(_that.silent);case UploadFile():
 return uploadFile(_that.file);case DeleteFile():
 return deleteFile(_that.filename);case StartAutoRefresh():
 return startAutoRefresh();case StopAutoRefresh():
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _NotificationReceived():
+return notificationReceived();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,7 +200,7 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,TResult? Function()?  notificationReceived,}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -205,7 +210,8 @@ return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
 return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
 return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _NotificationReceived() when notificationReceived != null:
+return notificationReceived();case _:
   return null;
 
 }
@@ -633,6 +639,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ClientEvent.stopAutoRefresh()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _NotificationReceived implements ClientEvent {
+  const _NotificationReceived();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotificationReceived);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ClientEvent.notificationReceived()';
 }
 
 

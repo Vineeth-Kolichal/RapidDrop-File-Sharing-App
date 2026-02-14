@@ -16,6 +16,9 @@ class WebClientRepositoryImpl implements WebClientRepository {
   WebClientRepositoryImpl(this.dataSource);
 
   @override
+  Stream<void> get notifications => dataSource.notifications;
+
+  @override
   Future<Either<Failure, ConnectionInfo>> connectToServer(
     String ip,
     int port,
