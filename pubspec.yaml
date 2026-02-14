@@ -74,6 +74,7 @@ dependencies:
   shelf_web_socket: ^3.0.0
   web_socket_channel: ^3.0.3
   shared_preferences: ^2.5.4
+  desktop_drop: ^0.7.0
 
 dev_dependencies:
   flutter_test:

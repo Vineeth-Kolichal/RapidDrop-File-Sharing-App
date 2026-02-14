@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:file_sharing/common/widgets/responsive.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
 import 'package:file_sharing/core/services/sharedprefs_services.dart';
@@ -24,11 +26,13 @@ class ClientDashboardScreen extends StatefulWidget {
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   final TextEditingController _pinController = TextEditingController();
   final ValueNotifier<bool> isHostFiles = ValueNotifier(true);
+  final ValueNotifier<bool> isDragging = ValueNotifier(false);
 
   @override
   void dispose() {
     _pinController.dispose();
     isHostFiles.dispose();
+    isDragging.dispose();
     super.dispose();
   }
 
@@ -270,84 +274,132 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ),
           const SizedBox(height: 24),
           Expanded(
-            child: InkWell(
-              onTap: _uploadFile,
-              borderRadius: BorderRadius.circular(16),
-              child: CustomPaint(
-                painter: _DashedBorderPainter(
-                  color:
-                      context.appColors?.primary?.withValues(alpha: 0.3) ??
-                      Colors.blue.withValues(alpha: 0.3),
-                  strokeWidth: 2,
-                  gap: 8,
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: context.appColors?.primary?.withValues(alpha: 0.05),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isDragging,
+              builder: (context, dragging, child) {
+                return DropTarget(
+                  onDragDone: (details) async {
+                    if (details.files.isNotEmpty) {
+                      for (final XFile file in details.files) {
+                        FileEntity fileEntity;
+                        if (kIsWeb) {
+                          final bytes = await file.readAsBytes();
+                          fileEntity = FileEntity(
+                            name: file.name,
+                            bytes: bytes,
+                          );
+                        } else {
+                          fileEntity = FileEntity(
+                            name: file.name,
+                            path: file.path,
+                          );
+                        }
+                        if (mounted) {
+                          context.read<ClientBloc>().add(
+                            ClientEvent.uploadFile(fileEntity),
+                          );
+                        }
+                      }
+                    }
+                  },
+                  onDragEntered: (details) {
+                    isDragging.value = true;
+                  },
+                  onDragExited: (details) {
+                    isDragging.value = false;
+                  },
+                  child: InkWell(
+                    onTap: _uploadFile,
                     borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
+                    child: CustomPaint(
+                      painter: _DashedBorderPainter(
+                        color: dragging
+                            ? context.appColors?.primary ?? Colors.blue
+                            : context.appColors?.primary?.withValues(
+                                    alpha: 0.3,
+                                  ) ??
+                                  Colors.blue.withValues(alpha: 0.3),
+                        strokeWidth: dragging ? 3 : 2,
+                        gap: 8,
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: context.appColors?.surfaceColor,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                          color: dragging
+                              ? context.appColors?.primary?.withValues(
+                                  alpha: 0.1,
+                                )
+                              : context.appColors?.primary?.withValues(
+                                  alpha: 0.05,
+                                ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: context.appColors?.surfaceColor,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.cloud_upload_outlined,
+                                size: 48,
+                                color: context.appColors?.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              dragging ? 'Drop files here' : 'Upload Zone',
+                              style: context.titleMedium().copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              dragging
+                                  ? 'Release to upload'
+                                  : 'Drag & Drop files here or click to browse',
+                              textAlign: TextAlign.center,
+                              style: context.bodyMedium().copyWith(
+                                color: context.appColors?.onSurface?.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: _uploadFile,
+                              icon: const Icon(Icons.folder_open),
+                              label: const Text('Browse Files to Send'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.appColors?.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.cloud_upload_outlined,
-                          size: 48,
-                          color: context.appColors?.primary,
-                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Upload Zone',
-                        style: context.titleMedium().copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Click to browse files to send',
-                        textAlign: TextAlign.center,
-                        style: context.bodyMedium().copyWith(
-                          color: context.appColors?.onSurface?.withValues(
-                            alpha: 0.6,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: _uploadFile,
-                        icon: const Icon(Icons.folder_open),
-                        label: const Text('Browse Files to Send'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors?.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
