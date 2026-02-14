@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_sharing/core/theme/theme_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,13 +26,18 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<ServerBloc>()),
         BlocProvider(create: (context) => getIt<ClientBloc>()),
       ],
-      child: MaterialApp(
-        title: "RapidDrop",
-        themeMode: ThemeMode.system,
-        theme: theme.light(),
-        darkTheme: theme.dark(),
-        home: _getPlatformScreen(),
-        debugShowCheckedModeBanner: false,
+      child: ValueListenableBuilder(
+        valueListenable: themeNotifier,
+        builder: (context, themeMode, child) {
+          return MaterialApp(
+            title: "RapidDrop",
+            themeMode: themeMode,
+            theme: theme.light(),
+            darkTheme: theme.dark(),
+            home: _getPlatformScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }
