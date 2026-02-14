@@ -1,7 +1,7 @@
 flutter clean
 flutter pub get
 # Clean the destination directory to prevent recursive copying
-rm -rf android/app/src/main/assets/web/*
+# rm -rf android/app/src/main/assets/web/*
 
 flutter build web --release
 

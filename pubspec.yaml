@@ -106,7 +106,11 @@ flutter:
     # Embedded web UI files served by Android HTTP server
     - android/app/src/main/assets/web/
     - android/app/src/main/assets/web/assets/
+    - android/app/src/main/assets/web/assets/fonts/
+    - android/app/src/main/assets/web/assets/shaders/
+    - android/app/src/main/assets/web/assets/packages/cupertino_icons/assets/
     - android/app/src/main/assets/web/canvaskit/
+    - android/app/src/main/assets/web/canvaskit/chromium/
     - android/app/src/main/assets/web/icons/
   #   - images/a_dot_ham.jpeg
 

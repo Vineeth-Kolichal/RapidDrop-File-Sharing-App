@@ -43,8 +43,6 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<FetchFiles>(_onFetchFiles);
     on<UploadFile>(_onUploadFile);
     on<DeleteFile>(_onDeleteFile);
-    on<UploadFile>(_onUploadFile);
-    on<DeleteFile>(_onDeleteFile);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
     on<_NotificationReceived>(_onNotificationReceived);

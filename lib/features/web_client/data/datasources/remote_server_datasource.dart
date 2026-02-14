@@ -33,9 +33,6 @@ class RemoteServerDataSource {
       // Store session token for future requests
       _dio.options.headers['Authorization'] = 'Bearer $sessionToken';
 
-      // Store session token for future requests
-      _dio.options.headers['Authorization'] = 'Bearer $sessionToken';
-
       // Connect to WebSocket
       final wsUrl = response.data['wsUrl'] as String?;
       await connectWebSocket(pin: pin, url: wsUrl);
