@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -73,7 +71,7 @@ class Loading extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
-                    Platform.isIOS
+                    Theme.of(context).platform == TargetPlatform.iOS
                         ? const CupertinoActivityIndicator(radius: 15)
                         : const CircularProgressIndicator(strokeWidth: 2),
                   ],
