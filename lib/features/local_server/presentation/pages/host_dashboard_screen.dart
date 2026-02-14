@@ -277,9 +277,31 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                                       )
                                     : Padding(
                                         padding: const EdgeInsets.all(32.0),
-                                        child: Text(
-                                          'No files shared yet',
-                                          style: context.bodyMedium(),
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons.folder_open_outlined,
+                                              size: 64,
+                                              color: context
+                                                  .appColors
+                                                  ?.onSurface
+                                                  ?.withValues(alpha: 0.2),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'No files shared yet',
+                                              style: context
+                                                  .bodyMedium()
+                                                  ?.copyWith(
+                                                    color: context
+                                                        .appColors
+                                                        ?.onSurface
+                                                        ?.withValues(
+                                                          alpha: 0.5,
+                                                        ),
+                                                  ),
+                                            ),
+                                          ],
                                         ),
                                       )
                               else
@@ -290,9 +312,31 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                                       )
                                     : Padding(
                                         padding: const EdgeInsets.all(32.0),
-                                        child: Text(
-                                          'No files received yet',
-                                          style: context.bodyMedium(),
+                                        child: Column(
+                                          children: [
+                                            Icon(
+                                              Icons.move_to_inbox_outlined,
+                                              size: 64,
+                                              color: context
+                                                  .appColors
+                                                  ?.onSurface
+                                                  ?.withValues(alpha: 0.2),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'No files received yet',
+                                              style: context
+                                                  .bodyMedium()
+                                                  ?.copyWith(
+                                                    color: context
+                                                        .appColors
+                                                        ?.onSurface
+                                                        ?.withValues(
+                                                          alpha: 0.5,
+                                                        ),
+                                                  ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                             ],
