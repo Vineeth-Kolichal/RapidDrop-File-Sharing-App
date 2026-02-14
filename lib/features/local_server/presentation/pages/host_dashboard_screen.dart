@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
+import 'package:file_sharing/core/services/sharedprefs_services.dart';
 import 'package:file_sharing/core/theme/theme_notifier.dart';
 import '../bloc/server_bloc.dart';
 import '../widgets/server_idle_view.dart';
@@ -19,6 +20,8 @@ class HostDashboardScreen extends StatefulWidget {
 }
 
 class _HostDashboardScreenState extends State<HostDashboardScreen> {
+  final ValueNotifier<bool> isSharedByMe = ValueNotifier(true); // Moved here
+
   Future<void> _pickAndAddFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -97,9 +100,13 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                 ),
                 tooltip: 'Toggle Theme',
                 onPressed: () {
-                  themeNotifier.value = themeMode == ThemeMode.dark
+                  final newMode = themeMode == ThemeMode.dark
                       ? ThemeMode.light
                       : ThemeMode.dark;
+                  themeNotifier.value = newMode;
+                  SharedPrefsServices.instance.setThemeMode(
+                    newMode == ThemeMode.dark,
+                  );
                 },
               );
             },
