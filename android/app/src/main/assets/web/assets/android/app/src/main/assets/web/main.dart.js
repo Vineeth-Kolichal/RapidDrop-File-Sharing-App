@@ -46839,7 +46839,7 @@ N(a){var s=null,r=B.aU.h4(57),q=B.aU.h4(45),p=B.aU.h4(36),o=B.aU.h4(32),n=B.aU.h
 j=A.b([A.aEz(new A.ae7(),t.mL),A.aEz(new A.ae8(),t.jp)],t.Ds)
 k=f.YS(A.aAr(B.a4,s,B.CL,s,B.CJ,s,s,B.ft),B.zF)
 l=f.YS(A.aAr(B.ad,B.CH,B.CG,B.C3,B.CR,s,s,B.ft),B.zG)
-return A.aSS(new A.B8(this.a99(),"File Sharing",k,l,B.yS,!1,s),j)},
+return A.aSS(new A.B8(this.a99(),"RapidDrop",k,l,B.yS,!1,s),j)},
 a99(){return B.BK}}
 A.ae7.prototype={
 $1(a){return $.aA_().$1$0(t.mL)},
