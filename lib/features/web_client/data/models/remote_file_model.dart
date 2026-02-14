@@ -10,6 +10,7 @@ class RemoteFileModel extends RemoteFile {
     required super.size,
     required super.mimeType,
     required super.addedAt,
+    super.isUploaded,
   });
 
   factory RemoteFileModel.fromJson(Map<String, dynamic> json) =>

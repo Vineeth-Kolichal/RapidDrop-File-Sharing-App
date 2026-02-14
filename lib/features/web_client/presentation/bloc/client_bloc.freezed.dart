@@ -137,14 +137,14 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( String filePath)?  uploadFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
 return validatePin(_that.pin);case Disconnect() when disconnect != null:
 return disconnect();case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
-return uploadFile(_that.filePath);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that.file);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _:
   return orElse();
@@ -164,14 +164,14 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( String filePath)  uploadFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
 switch (_that) {
 case Connect():
 return connect(_that.ip,_that.port);case ValidatePin():
 return validatePin(_that.pin);case Disconnect():
 return disconnect();case FetchFiles():
 return fetchFiles(_that.silent);case UploadFile():
-return uploadFile(_that.filePath);case StartAutoRefresh():
+return uploadFile(_that.file);case StartAutoRefresh():
 return startAutoRefresh();case StopAutoRefresh():
 return stopAutoRefresh();case _:
   throw StateError('Unexpected subclass');
@@ -190,14 +190,14 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( String filePath)?  uploadFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
 return validatePin(_that.pin);case Disconnect() when disconnect != null:
 return disconnect();case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
-return uploadFile(_that.filePath);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that.file);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _:
   return null;
@@ -443,10 +443,10 @@ as bool,
 
 
 class UploadFile implements ClientEvent {
-  const UploadFile(this.filePath);
+  const UploadFile(this.file);
   
 
- final  String filePath;
+ final  FileEntity file;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -458,16 +458,16 @@ $UploadFileCopyWith<UploadFile> get copyWith => _$UploadFileCopyWithImpl<UploadF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadFile&&(identical(other.filePath, filePath) || other.filePath == filePath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadFile&&(identical(other.file, file) || other.file == file));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,filePath);
+int get hashCode => Object.hash(runtimeType,file);
 
 @override
 String toString() {
-  return 'ClientEvent.uploadFile(filePath: $filePath)';
+  return 'ClientEvent.uploadFile(file: $file)';
 }
 
 
@@ -478,7 +478,7 @@ abstract mixin class $UploadFileCopyWith<$Res> implements $ClientEventCopyWith<$
   factory $UploadFileCopyWith(UploadFile value, $Res Function(UploadFile) _then) = _$UploadFileCopyWithImpl;
 @useResult
 $Res call({
- String filePath
+ FileEntity file
 });
 
 
@@ -495,10 +495,10 @@ class _$UploadFileCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? filePath = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? file = null,}) {
   return _then(UploadFile(
-null == filePath ? _self.filePath : filePath // ignore: cast_nullable_to_non_nullable
-as String,
+null == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
+as FileEntity,
   ));
 }
 

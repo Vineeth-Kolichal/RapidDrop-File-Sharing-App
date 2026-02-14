@@ -7,7 +7,7 @@ class ClientEvent with _$ClientEvent {
   const factory ClientEvent.disconnect() = Disconnect;
   const factory ClientEvent.fetchFiles({@Default(false) bool silent}) =
       FetchFiles;
-  const factory ClientEvent.uploadFile(String filePath) = UploadFile;
+  const factory ClientEvent.uploadFile(FileEntity file) = UploadFile;
   const factory ClientEvent.startAutoRefresh() = StartAutoRefresh;
   const factory ClientEvent.stopAutoRefresh() = StopAutoRefresh;
 }

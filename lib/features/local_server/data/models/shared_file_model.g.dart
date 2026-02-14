@@ -13,6 +13,7 @@ SharedFileModel _$SharedFileModelFromJson(Map<String, dynamic> json) =>
       size: (json['size'] as num).toInt(),
       mimeType: json['mimeType'] as String,
       addedAt: DateTime.parse(json['addedAt'] as String),
+      isUploaded: json['isUploaded'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SharedFileModelToJson(SharedFileModel instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$SharedFileModelToJson(SharedFileModel instance) =>
       'size': instance.size,
       'mimeType': instance.mimeType,
       'addedAt': instance.addedAt.toIso8601String(),
+      'isUploaded': instance.isUploaded,
     };

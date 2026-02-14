@@ -29,6 +29,8 @@ import 'package:file_sharing/features/local_server/domain/usecases/start_server_
     as _i864;
 import 'package:file_sharing/features/local_server/domain/usecases/stop_server_usecase.dart'
     as _i140;
+import 'package:file_sharing/features/local_server/domain/usecases/watch_shared_files_usecase.dart'
+    as _i676;
 import 'package:file_sharing/features/local_server/presentation/bloc/server_bloc.dart'
     as _i523;
 import 'package:file_sharing/features/web_client/data/datasources/remote_server_datasource.dart'
@@ -89,14 +91,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i140.StopServerUseCase>(
       () => _i140.StopServerUseCase(gh<_i806.LocalServerRepository>()),
     );
-    gh.factory<_i523.ServerBloc>(
-      () => _i523.ServerBloc(
-        gh<_i864.StartServerUseCase>(),
-        gh<_i140.StopServerUseCase>(),
-        gh<_i962.GetServerInfoUseCase>(),
-        gh<_i245.AddFileUseCase>(),
-        gh<_i542.RemoveFileUseCase>(),
-      ),
+    gh.lazySingleton<_i676.WatchSharedFilesUseCase>(
+      () => _i676.WatchSharedFilesUseCase(gh<_i806.LocalServerRepository>()),
     );
     gh.lazySingleton<_i81.ConnectToServerUseCase>(
       () => _i81.ConnectToServerUseCase(gh<_i591.WebClientRepository>()),
@@ -109,6 +105,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1015.ValidatePinUseCase>(
       () => _i1015.ValidatePinUseCase(gh<_i591.WebClientRepository>()),
+    );
+    gh.factory<_i523.ServerBloc>(
+      () => _i523.ServerBloc(
+        gh<_i864.StartServerUseCase>(),
+        gh<_i140.StopServerUseCase>(),
+        gh<_i962.GetServerInfoUseCase>(),
+        gh<_i245.AddFileUseCase>(),
+        gh<_i542.RemoveFileUseCase>(),
+        gh<_i676.WatchSharedFilesUseCase>(),
+      ),
     );
     gh.factory<_i700.ClientBloc>(
       () => _i700.ClientBloc(

@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:file_sharing/core/base_usecase/base_usecase.dart';
 import '../../domain/entities/connection_info.dart';
+import '../../domain/entities/file_entity.dart';
 import '../../domain/entities/remote_file.dart';
 import '../../domain/usecases/connect_to_server_usecase.dart';
 import '../../domain/usecases/get_file_list_usecase.dart';
@@ -144,9 +145,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
     emit(state.copyWith(isLoading: true));
 
-    final result = await uploadFileUseCase(
-      UploadFileParams(filePath: event.filePath),
-    );
+    final result = await uploadFileUseCase(UploadFileParams(file: event.file));
 
     await result.fold(
       (failure) async =>

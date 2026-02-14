@@ -80,4 +80,11 @@ class LocalServerRepositoryImpl implements LocalServerRepository {
       return Left(Failure.fileFailure(e.toString()));
     }
   }
+
+  @override
+  Stream<List<SharedFile>> get filesStream {
+    return dataSource.filesStream.map((files) {
+      return files.map((file) => file as SharedFile).toList();
+    });
+  }
 }

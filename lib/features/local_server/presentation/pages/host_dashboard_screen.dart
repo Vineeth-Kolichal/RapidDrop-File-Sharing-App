@@ -349,45 +349,20 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
 
                 // Files List
                 if (serverInfo.sharedFiles.isNotEmpty) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Shared Files', style: context.titleMedium()),
-                      Text(
-                        '${serverInfo.sharedFiles.length} files',
-                        style: context.bodySmall(),
-                      ),
-                    ],
+                  // Files from App
+                  _buildFileSection(
+                    context,
+                    'Shared from App',
+                    serverInfo.sharedFiles.where((f) => !f.isUploaded).toList(),
+                    appColors,
                   ),
-                  const SizedBox(height: 8),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: serverInfo.sharedFiles.length,
-                    itemBuilder: (context, index) {
-                      final file = serverInfo.sharedFiles[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.insert_drive_file,
-                            color: appColors?.primary,
-                          ),
-                          title: Text(file.name),
-                          subtitle: Text(
-                            '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              context.read<ServerBloc>().add(
-                                ServerEvent.removeFile(file.name),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
+
+                  // Files from Web
+                  _buildFileSection(
+                    context,
+                    'Received from Web',
+                    serverInfo.sharedFiles.where((f) => f.isUploaded).toList(),
+                    appColors,
                   ),
                 ] else
                   Padding(
@@ -408,5 +383,69 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
         label: const Text('Add Files'),
       ),
     );
+  }
+
+  Widget _buildFileSection(
+    BuildContext context,
+    String title,
+    List<dynamic> files,
+    dynamic appColors,
+  ) {
+    if (files.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: context.titleMedium()),
+            Text('${files.length} files', style: context.bodySmall()),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: files.length,
+          itemBuilder: (context, index) {
+            final file = files[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                leading: Icon(
+                  _getFileIcon(file.mimeType),
+                  color: appColors?.primary,
+                ),
+                title: Text(file.name),
+                subtitle: Text(
+                  '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    context.read<ServerBloc>().add(
+                      ServerEvent.removeFile(file.name),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  IconData _getFileIcon(String mimeType) {
+    if (mimeType.startsWith('image/')) return Icons.image;
+    if (mimeType.startsWith('video/')) return Icons.video_file;
+    if (mimeType.startsWith('audio/')) return Icons.audio_file;
+    if (mimeType.contains('pdf')) return Icons.picture_as_pdf;
+    if (mimeType.contains('zip') || mimeType.contains('archive')) {
+      return Icons.folder_zip;
+    }
+    return Icons.insert_drive_file;
   }
 }

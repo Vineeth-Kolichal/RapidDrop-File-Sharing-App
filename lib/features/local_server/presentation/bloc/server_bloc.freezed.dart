@@ -55,7 +55,7 @@ extension ServerEventPatterns on ServerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( StartServer value)?  startServer,TResult Function( StopServer value)?  stopServer,TResult Function( AddFile value)?  addFile,TResult Function( RemoveFile value)?  removeFile,TResult Function( GetServerInfo value)?  getServerInfo,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( StartServer value)?  startServer,TResult Function( StopServer value)?  stopServer,TResult Function( AddFile value)?  addFile,TResult Function( RemoveFile value)?  removeFile,TResult Function( GetServerInfo value)?  getServerInfo,TResult Function( SharedFilesUpdated value)?  sharedFilesUpdated,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case StartServer() when startServer != null:
@@ -63,7 +63,8 @@ return startServer(_that);case StopServer() when stopServer != null:
 return stopServer(_that);case AddFile() when addFile != null:
 return addFile(_that);case RemoveFile() when removeFile != null:
 return removeFile(_that);case GetServerInfo() when getServerInfo != null:
-return getServerInfo(_that);case _:
+return getServerInfo(_that);case SharedFilesUpdated() when sharedFilesUpdated != null:
+return sharedFilesUpdated(_that);case _:
   return orElse();
 
 }
@@ -81,7 +82,7 @@ return getServerInfo(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( StartServer value)  startServer,required TResult Function( StopServer value)  stopServer,required TResult Function( AddFile value)  addFile,required TResult Function( RemoveFile value)  removeFile,required TResult Function( GetServerInfo value)  getServerInfo,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( StartServer value)  startServer,required TResult Function( StopServer value)  stopServer,required TResult Function( AddFile value)  addFile,required TResult Function( RemoveFile value)  removeFile,required TResult Function( GetServerInfo value)  getServerInfo,required TResult Function( SharedFilesUpdated value)  sharedFilesUpdated,}){
 final _that = this;
 switch (_that) {
 case StartServer():
@@ -89,7 +90,8 @@ return startServer(_that);case StopServer():
 return stopServer(_that);case AddFile():
 return addFile(_that);case RemoveFile():
 return removeFile(_that);case GetServerInfo():
-return getServerInfo(_that);case _:
+return getServerInfo(_that);case SharedFilesUpdated():
+return sharedFilesUpdated(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -106,7 +108,7 @@ return getServerInfo(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( StartServer value)?  startServer,TResult? Function( StopServer value)?  stopServer,TResult? Function( AddFile value)?  addFile,TResult? Function( RemoveFile value)?  removeFile,TResult? Function( GetServerInfo value)?  getServerInfo,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( StartServer value)?  startServer,TResult? Function( StopServer value)?  stopServer,TResult? Function( AddFile value)?  addFile,TResult? Function( RemoveFile value)?  removeFile,TResult? Function( GetServerInfo value)?  getServerInfo,TResult? Function( SharedFilesUpdated value)?  sharedFilesUpdated,}){
 final _that = this;
 switch (_that) {
 case StartServer() when startServer != null:
@@ -114,7 +116,8 @@ return startServer(_that);case StopServer() when stopServer != null:
 return stopServer(_that);case AddFile() when addFile != null:
 return addFile(_that);case RemoveFile() when removeFile != null:
 return removeFile(_that);case GetServerInfo() when getServerInfo != null:
-return getServerInfo(_that);case _:
+return getServerInfo(_that);case SharedFilesUpdated() when sharedFilesUpdated != null:
+return sharedFilesUpdated(_that);case _:
   return null;
 
 }
@@ -131,14 +134,15 @@ return getServerInfo(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  startServer,TResult Function()?  stopServer,TResult Function( String filePath)?  addFile,TResult Function( String filename)?  removeFile,TResult Function()?  getServerInfo,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  startServer,TResult Function()?  stopServer,TResult Function( String filePath)?  addFile,TResult Function( String filename)?  removeFile,TResult Function()?  getServerInfo,TResult Function( List<SharedFile> files)?  sharedFilesUpdated,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case StartServer() when startServer != null:
 return startServer();case StopServer() when stopServer != null:
 return stopServer();case AddFile() when addFile != null:
 return addFile(_that.filePath);case RemoveFile() when removeFile != null:
 return removeFile(_that.filename);case GetServerInfo() when getServerInfo != null:
-return getServerInfo();case _:
+return getServerInfo();case SharedFilesUpdated() when sharedFilesUpdated != null:
+return sharedFilesUpdated(_that.files);case _:
   return orElse();
 
 }
@@ -156,14 +160,15 @@ return getServerInfo();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  startServer,required TResult Function()  stopServer,required TResult Function( String filePath)  addFile,required TResult Function( String filename)  removeFile,required TResult Function()  getServerInfo,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  startServer,required TResult Function()  stopServer,required TResult Function( String filePath)  addFile,required TResult Function( String filename)  removeFile,required TResult Function()  getServerInfo,required TResult Function( List<SharedFile> files)  sharedFilesUpdated,}) {final _that = this;
 switch (_that) {
 case StartServer():
 return startServer();case StopServer():
 return stopServer();case AddFile():
 return addFile(_that.filePath);case RemoveFile():
 return removeFile(_that.filename);case GetServerInfo():
-return getServerInfo();case _:
+return getServerInfo();case SharedFilesUpdated():
+return sharedFilesUpdated(_that.files);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +185,15 @@ return getServerInfo();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  startServer,TResult? Function()?  stopServer,TResult? Function( String filePath)?  addFile,TResult? Function( String filename)?  removeFile,TResult? Function()?  getServerInfo,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  startServer,TResult? Function()?  stopServer,TResult? Function( String filePath)?  addFile,TResult? Function( String filename)?  removeFile,TResult? Function()?  getServerInfo,TResult? Function( List<SharedFile> files)?  sharedFilesUpdated,}) {final _that = this;
 switch (_that) {
 case StartServer() when startServer != null:
 return startServer();case StopServer() when stopServer != null:
 return stopServer();case AddFile() when addFile != null:
 return addFile(_that.filePath);case RemoveFile() when removeFile != null:
 return removeFile(_that.filename);case GetServerInfo() when getServerInfo != null:
-return getServerInfo();case _:
+return getServerInfo();case SharedFilesUpdated() when sharedFilesUpdated != null:
+return sharedFilesUpdated(_that.files);case _:
   return null;
 
 }
@@ -422,6 +428,78 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class SharedFilesUpdated implements ServerEvent {
+  const SharedFilesUpdated(final  List<SharedFile> files): _files = files;
+  
+
+ final  List<SharedFile> _files;
+ List<SharedFile> get files {
+  if (_files is EqualUnmodifiableListView) return _files;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_files);
+}
+
+
+/// Create a copy of ServerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SharedFilesUpdatedCopyWith<SharedFilesUpdated> get copyWith => _$SharedFilesUpdatedCopyWithImpl<SharedFilesUpdated>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SharedFilesUpdated&&const DeepCollectionEquality().equals(other._files, _files));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_files));
+
+@override
+String toString() {
+  return 'ServerEvent.sharedFilesUpdated(files: $files)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SharedFilesUpdatedCopyWith<$Res> implements $ServerEventCopyWith<$Res> {
+  factory $SharedFilesUpdatedCopyWith(SharedFilesUpdated value, $Res Function(SharedFilesUpdated) _then) = _$SharedFilesUpdatedCopyWithImpl;
+@useResult
+$Res call({
+ List<SharedFile> files
+});
+
+
+
+
+}
+/// @nodoc
+class _$SharedFilesUpdatedCopyWithImpl<$Res>
+    implements $SharedFilesUpdatedCopyWith<$Res> {
+  _$SharedFilesUpdatedCopyWithImpl(this._self, this._then);
+
+  final SharedFilesUpdated _self;
+  final $Res Function(SharedFilesUpdated) _then;
+
+/// Create a copy of ServerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? files = null,}) {
+  return _then(SharedFilesUpdated(
+null == files ? _self._files : files // ignore: cast_nullable_to_non_nullable
+as List<SharedFile>,
+  ));
+}
+
+
+}
 
 /// @nodoc
 mixin _$ServerState {

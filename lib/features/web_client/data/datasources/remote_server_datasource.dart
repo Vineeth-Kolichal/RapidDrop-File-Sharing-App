@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:file_sharing/core/api_endpoints/api_endpoints.dart';
+import '../../domain/entities/file_entity.dart';
 import '../models/remote_file_model.dart';
 
 @LazySingleton()
@@ -79,18 +79,33 @@ class RemoteServerDataSource {
     }
   }
 
-  Future<void> uploadFile(String filePath) async {
+  Future<void> uploadFile(FileEntity file) async {
     if (_baseUrl == null) {
       throw Exception('Not connected to any server');
     }
 
     try {
-      final file = File(filePath);
-      final filename = file.path.split('/').last;
+      final formData = FormData();
 
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath, filename: filename),
-      });
+      if (file.bytes != null) {
+        // Web upload using bytes
+        formData.files.add(
+          MapEntry(
+            'file',
+            MultipartFile.fromBytes(file.bytes!, filename: file.name),
+          ),
+        );
+      } else if (file.path != null) {
+        // Mobile/Desktop upload using path
+        formData.files.add(
+          MapEntry(
+            'file',
+            await MultipartFile.fromFile(file.path!, filename: file.name),
+          ),
+        );
+      } else {
+        throw Exception('No file data provided');
+      }
 
       await _dio.post('$_baseUrl${ApiEndpoints.upload}', data: formData);
     } catch (e) {

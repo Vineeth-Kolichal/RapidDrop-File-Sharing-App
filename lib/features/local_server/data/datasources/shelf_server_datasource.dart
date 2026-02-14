@@ -22,6 +22,9 @@ class ShelfServerDataSource {
   final Set<String> _validSessions = {}; // Active session tokens
   static const int _port = 8080;
 
+  final _filesController = StreamController<List<SharedFileModel>>.broadcast();
+  Stream<List<SharedFileModel>> get filesStream => _filesController.stream;
+
   Future<Map<String, dynamic>> startServer() async {
     try {
       // Get WiFi IP address
@@ -95,6 +98,7 @@ class ShelfServerDataSource {
             'size': file.size,
             'mimeType': file.mimeType,
             'addedAt': file.addedAt.toIso8601String(),
+            'isUploaded': file.isUploaded,
           };
         }).toList();
 
@@ -220,9 +224,11 @@ class ShelfServerDataSource {
             size: fileBytes.length,
             mimeType: mimeType,
             addedAt: DateTime.now(),
+            isUploaded: true,
           );
 
           _sharedFiles.add(fileModel);
+          _filesController.add(List.from(_sharedFiles));
           print(
             'File uploaded successfully: $finalFilename (${(fileBytes.length / 1024 / 1024).toStringAsFixed(2)} MB)',
           );
@@ -327,6 +333,7 @@ class ShelfServerDataSource {
       );
 
       _sharedFiles.add(fileModel);
+      _filesController.add(List.from(_sharedFiles));
       print('Successfully added file to shared list');
     } catch (e, stackTrace) {
       print('Error adding file: $e');
@@ -337,6 +344,7 @@ class ShelfServerDataSource {
 
   Future<void> removeFile(String filename) async {
     _sharedFiles.removeWhere((file) => file.name == filename);
+    _filesController.add(List.from(_sharedFiles));
   }
 
   // CORS middleware

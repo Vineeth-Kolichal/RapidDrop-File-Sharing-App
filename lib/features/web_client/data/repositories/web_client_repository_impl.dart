@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:file_sharing/core/failures/failures.dart';
 import '../../domain/entities/connection_info.dart';
+import '../../domain/entities/file_entity.dart';
 import '../../domain/entities/remote_file.dart';
 import '../../domain/repositories/web_client_repository.dart';
 import '../datasources/remote_server_datasource.dart';
@@ -76,9 +77,9 @@ class WebClientRepositoryImpl implements WebClientRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> uploadFile(String filePath) async {
+  Future<Either<Failure, Unit>> uploadFile(FileEntity file) async {
     try {
-      await dataSource.uploadFile(filePath);
+      await dataSource.uploadFile(file);
       return const Right(unit);
     } catch (e) {
       return Left(Failure.fileFailure('Failed to upload file: $e'));
