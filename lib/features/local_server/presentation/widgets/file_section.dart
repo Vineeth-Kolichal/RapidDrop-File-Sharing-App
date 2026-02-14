@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
 import 'package:file_sharing/core/theme/app_colors.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import '../../domain/entities/shared_file.dart';
 import '../bloc/server_bloc.dart';
 
@@ -19,28 +22,56 @@ class FileSection extends StatefulWidget {
 
 class _FileSectionState extends State<FileSection> {
   final Set<String> _downloadedFiles = {};
+  static const platform = MethodChannel('com.devdecode.rapiddrop/files');
 
   Future<void> _saveToDownloads(SharedFile file) async {
     try {
-      final sourceFile = File(file.path);
-      if (!await sourceFile.exists()) {
-        throw Exception('Source file not found');
-      }
-
-      String? downloadPath;
       if (Platform.isAndroid) {
-        downloadPath = '/storage/emulated/0/Download';
+        // Check Android version
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        final sdkInt = androidInfo.version.sdkInt;
+
+        if (sdkInt < 29) {
+          // Android 9 (Pie) and below need runtime permission
+          var status = await Permission.storage.status;
+          if (!status.isGranted) {
+            status = await Permission.storage.request();
+            if (!status.isGranted) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Storage permission required to save files'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+              return;
+            }
+          }
+        }
+        // For Android 10+ (SDK 29+), no permission needed for MediaStore downloads
+
+        final String result = await platform.invokeMethod(
+          'saveFileToDownloads',
+          {'path': file.path, 'name': file.name},
+        );
+
+        debugPrint('File saved to: $result');
       } else {
+        // Non-Android platforms (e.g. desktop)
         final directory = await getDownloadsDirectory();
-        downloadPath = directory?.path;
-      }
+        if (directory == null) {
+          throw Exception('Could not determine downloads directory');
+        }
 
-      if (downloadPath == null) {
-        throw Exception('Could not determine downloads directory');
-      }
+        final sourceFile = File(file.path);
+        if (!await sourceFile.exists()) {
+          throw Exception('Source file not found');
+        }
 
-      final targetPath = '$downloadPath/${file.name}';
-      await sourceFile.copy(targetPath);
+        final targetPath = '${directory.path}/${file.name}';
+        await sourceFile.copy(targetPath);
+      }
 
       setState(() {
         _downloadedFiles.add(file.name);
@@ -68,8 +99,9 @@ class _FileSectionState extends State<FileSection> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.files.isEmpty)
+    if (widget.files.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
