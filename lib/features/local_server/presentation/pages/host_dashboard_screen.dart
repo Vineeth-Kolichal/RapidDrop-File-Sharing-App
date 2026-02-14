@@ -9,6 +9,8 @@ import '../widgets/connection_details_card.dart';
 import '../widgets/server_stats_row.dart';
 import '../widgets/file_section.dart';
 
+ValueNotifier<bool> isSharedByMe = ValueNotifier<bool>(true);
+
 class HostDashboardScreen extends StatefulWidget {
   const HostDashboardScreen({super.key});
 
@@ -154,6 +156,30 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                 const SizedBox(height: 16),
                 ServerStatsRow(serverInfo: serverInfo),
                 const SizedBox(height: 16),
+
+                ValueListenableBuilder<bool>(
+                  valueListenable: isSharedByMe,
+                  builder: (context, isShared, _) {
+                    if (serverInfo.sharedFiles.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    if (isShared) {
+                      return FileSection(
+                        title: 'Shared from App',
+                        files: serverInfo.sharedFiles
+                            .where((f) => !f.isUploaded)
+                            .toList(),
+                      );
+                    } else {
+                      return FileSection(
+                        title: 'Received from Web',
+                        files: serverInfo.sharedFiles
+                            .where((f) => f.isUploaded)
+                            .toList(),
+                      );
+                    }
+                  },
+                ),
                 if (serverInfo.sharedFiles.isNotEmpty) ...[
                   FileSection(
                     title: 'Shared from App',

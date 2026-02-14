@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
+import 'package:file_sharing/core/theme/app_colors.dart';
 import '../../domain/entities/shared_file.dart';
 import '../bloc/server_bloc.dart';
 
@@ -69,8 +70,6 @@ class _FileSectionState extends State<FileSection> {
   Widget build(BuildContext context) {
     if (widget.files.isEmpty) return const SizedBox.shrink();
 
-    final appColors = context.appColors;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,63 +77,194 @@ class _FileSectionState extends State<FileSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title, style: context.titleMedium()),
-            Text('${widget.files.length} files', style: context.bodySmall()),
+            TextButton(
+              onPressed: () {
+                // TODO: Implement clear all
+              },
+              child: Text(
+                '${widget.files.length} files',
+                style: context.bodySmall(),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
-        ListView.builder(
+        GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.8,
+          ),
           itemCount: widget.files.length,
           itemBuilder: (context, index) {
             final file = widget.files[index];
             final isUploaded = file.isUploaded;
+            final isDownloaded = _downloadedFiles.contains(file.name);
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: Icon(
-                  _getFileIcon(file.mimeType),
-                  color: appColors?.primary,
-                ),
-                title: Text(file.name),
-                subtitle: Text(
-                  '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
-                ),
-                trailing: isUploaded
-                    ? _downloadedFiles.contains(file.name)
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : IconButton(
-                              icon: const Icon(Icons.download),
-                              tooltip: 'Save to Downloads',
-                              onPressed: () => _saveToDownloads(file),
-                            )
-                    : IconButton(
-                        icon: const Icon(Icons.close),
-                        tooltip: 'Stop Sharing',
-                        onPressed: () {
-                          context.read<ServerBloc>().add(
-                            ServerEvent.removeFile(file.name),
-                          );
-                        },
-                      ),
-              ),
-            );
+            return _buildFileCard(context, file, isUploaded, isDownloaded);
           },
         ),
-        const SizedBox(height: 70),
+        const SizedBox(height: 32),
       ],
     );
   }
 
+  Widget _buildFileCard(
+    BuildContext context,
+    SharedFile file,
+    bool isUploaded,
+    bool isDownloaded,
+  ) {
+    final appColors = context.appColors;
+    final fileTypeColor = _getFileTypeColor(file.mimeType, appColors);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.isDarkTheme ? Colors.grey[900] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.isDarkTheme ? Colors.grey[800]! : Colors.grey[200]!,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 16),
+          Expanded(
+            child: Center(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: fileTypeColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  _getFileIcon(file.mimeType),
+                  color: fileTypeColor,
+                  size: 32,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                Text(
+                  file.name,
+                  style: context.bodyMedium()?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _formatFileSize(file.size),
+                  style: context.bodySmall()?.copyWith(
+                    color: context.appColors?.onSurface?.withValues(alpha: 0.5),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: InkWell(
+              onTap: isUploaded
+                  ? () {
+                      if (!isDownloaded) {
+                        _saveToDownloads(file);
+                      } else {
+                        // TODO: Implement open file
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('File already downloaded'),
+                          ),
+                        );
+                      }
+                    }
+                  : () {
+                      context.read<ServerBloc>().add(
+                        ServerEvent.removeFile(file.name),
+                      );
+                    },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isUploaded
+                      ? (isDownloaded
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : appColors?.primary?.withValues(alpha: 0.1))
+                      : Colors.red.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
+                  ),
+                ),
+                child: Text(
+                  isUploaded
+                      ? (isDownloaded ? 'Downloaded' : 'Download')
+                      : 'Remove',
+                  style: context.labelMedium()?.copyWith(
+                    color: isUploaded
+                        ? (isDownloaded ? Colors.green : appColors?.primary)
+                        : Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getFileTypeColor(String mimeType, AppColors? appColors) {
+    if (mimeType.startsWith('image/')) {
+      return appColors?.primary ?? Colors.blue;
+    }
+    if (mimeType.startsWith('video/')) return Colors.orange;
+    if (mimeType.startsWith('audio/')) return Colors.purple;
+    if (mimeType.contains('pdf')) return Colors.red;
+    if (mimeType.contains('zip') || mimeType.contains('archive')) {
+      return Colors.amber;
+    }
+    if (mimeType.contains('text/')) return Colors.grey;
+    return Colors.blueGrey;
+  }
+
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+
   IconData _getFileIcon(String mimeType) {
     if (mimeType.startsWith('image/')) return Icons.image;
-    if (mimeType.startsWith('video/')) return Icons.video_file;
-    if (mimeType.startsWith('audio/')) return Icons.audio_file;
+    if (mimeType.startsWith('video/')) return Icons.play_circle_outline;
+    if (mimeType.startsWith('audio/')) return Icons.music_note;
     if (mimeType.contains('pdf')) return Icons.picture_as_pdf;
     if (mimeType.contains('zip') || mimeType.contains('archive')) {
       return Icons.folder_zip;
     }
+    if (mimeType.contains('text/')) return Icons.description;
     return Icons.insert_drive_file;
   }
 }
