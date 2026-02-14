@@ -1,0 +1,13 @@
+part of 'client_bloc.dart';
+
+@freezed
+class ClientEvent with _$ClientEvent {
+  const factory ClientEvent.connect(String ip, int port) = Connect;
+  const factory ClientEvent.validatePin(String pin) = ValidatePin;
+  const factory ClientEvent.disconnect() = Disconnect;
+  const factory ClientEvent.fetchFiles({@Default(false) bool silent}) =
+      FetchFiles;
+  const factory ClientEvent.uploadFile(String filePath) = UploadFile;
+  const factory ClientEvent.startAutoRefresh() = StartAutoRefresh;
+  const factory ClientEvent.stopAutoRefresh() = StopAutoRefresh;
+}

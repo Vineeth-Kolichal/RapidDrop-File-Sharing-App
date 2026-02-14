@@ -1,0 +1,179 @@
+import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
+import 'package:file_sharing/core/base_usecase/base_usecase.dart';
+import '../../domain/entities/connection_info.dart';
+import '../../domain/entities/remote_file.dart';
+import '../../domain/usecases/connect_to_server_usecase.dart';
+import '../../domain/usecases/get_file_list_usecase.dart';
+import '../../domain/usecases/upload_file_usecase.dart';
+import '../../domain/usecases/validate_pin_usecase.dart';
+
+part 'client_bloc.freezed.dart';
+part 'client_event.dart';
+part 'client_state.dart';
+
+@injectable
+class ClientBloc extends Bloc<ClientEvent, ClientState> {
+  final ConnectToServerUseCase connectToServerUseCase;
+  final GetFileListUseCase getFileListUseCase;
+  final UploadFileUseCase uploadFileUseCase;
+  final ValidatePinUseCase validatePinUseCase;
+
+  Timer? _refreshTimer;
+  static const _refreshInterval = Duration(seconds: 3);
+
+  ClientBloc(
+    this.connectToServerUseCase,
+    this.getFileListUseCase,
+    this.uploadFileUseCase,
+    this.validatePinUseCase,
+  ) : super(ClientState.initial()) {
+    on<Connect>(_onConnect);
+    on<ValidatePin>(_onValidatePin);
+    on<Disconnect>(_onDisconnect);
+    on<FetchFiles>(_onFetchFiles);
+    on<UploadFile>(_onUploadFile);
+    on<StartAutoRefresh>(_onStartAutoRefresh);
+    on<StopAutoRefresh>(_onStopAutoRefresh);
+  }
+
+  Future<void> _onValidatePin(
+    ValidatePin event,
+    Emitter<ClientState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true, error: null));
+
+    final result = await validatePinUseCase(ValidatePinParams(pin: event.pin));
+
+    await result.fold(
+      (failure) async =>
+          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (connectionInfo) async {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            connectionInfo: connectionInfo,
+            error: null,
+          ),
+        );
+
+        // Auto-fetch files after successful validation
+        add(const ClientEvent.fetchFiles());
+
+        // Start auto-refresh
+        add(const ClientEvent.startAutoRefresh());
+      },
+    );
+  }
+
+  Future<void> _onConnect(Connect event, Emitter<ClientState> emit) async {
+    emit(state.copyWith(isLoading: true, error: null));
+
+    final result = await connectToServerUseCase(
+      ConnectParams(ip: event.ip, port: event.port),
+    );
+
+    await result.fold(
+      (failure) async =>
+          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (connectionInfo) async {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            connectionInfo: connectionInfo,
+            error: null,
+          ),
+        );
+
+        // Auto-fetch files after successful connection
+        add(const ClientEvent.fetchFiles());
+
+        // Start auto-refresh
+        add(const ClientEvent.startAutoRefresh());
+      },
+    );
+  }
+
+  Future<void> _onDisconnect(
+    Disconnect event,
+    Emitter<ClientState> emit,
+  ) async {
+    add(const ClientEvent.stopAutoRefresh());
+    emit(ClientState.initial());
+  }
+
+  Future<void> _onFetchFiles(
+    FetchFiles event,
+    Emitter<ClientState> emit,
+  ) async {
+    if (state.connectionInfo == null || !state.connectionInfo!.isConnected) {
+      emit(state.copyWith(error: 'Not connected to any server'));
+      return;
+    }
+
+    // Don't show loading spinner during auto-refresh
+    if (!event.silent) {
+      emit(state.copyWith(isLoading: true));
+    }
+
+    final result = await getFileListUseCase(NoParams());
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          isLoading: false,
+          error: event.silent ? null : failure.toString(),
+        ),
+      ),
+      (fileList) => emit(
+        state.copyWith(isLoading: false, fileList: fileList, error: null),
+      ),
+    );
+  }
+
+  Future<void> _onUploadFile(
+    UploadFile event,
+    Emitter<ClientState> emit,
+  ) async {
+    if (state.connectionInfo == null || !state.connectionInfo!.isConnected) {
+      emit(state.copyWith(error: 'Not connected to any server'));
+      return;
+    }
+
+    emit(state.copyWith(isLoading: true));
+
+    final result = await uploadFileUseCase(
+      UploadFileParams(filePath: event.filePath),
+    );
+
+    await result.fold(
+      (failure) async =>
+          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (_) async {
+        emit(state.copyWith(isLoading: false));
+        // Refresh file list after upload
+        add(const ClientEvent.fetchFiles());
+      },
+    );
+  }
+
+  void _onStartAutoRefresh(StartAutoRefresh event, Emitter<ClientState> emit) {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(_refreshInterval, (_) {
+      add(const ClientEvent.fetchFiles(silent: true));
+    });
+  }
+
+  void _onStopAutoRefresh(StopAutoRefresh event, Emitter<ClientState> emit) {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
+  }
+
+  @override
+  Future<void> close() {
+    _refreshTimer?.cancel();
+    return super.close();
+  }
+}

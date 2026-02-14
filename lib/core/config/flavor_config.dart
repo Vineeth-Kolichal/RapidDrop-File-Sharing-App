@@ -34,11 +34,7 @@ class FlavorConfig {
   }
 
   static FlavorConfig get instance {
-    _instance ??= FlavorConfig(
-      baseUrl: "http://numbersapi.com",
-      flavor: Flavor.dev,
-    );
+    _instance ??= FlavorConfig(baseUrl: "", flavor: Flavor.dev);
     return _instance!;
   }
 }
-
