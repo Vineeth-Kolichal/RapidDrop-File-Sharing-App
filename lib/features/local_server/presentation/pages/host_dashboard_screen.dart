@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
+import '../../domain/entities/shared_file.dart';
 import '../bloc/server_bloc.dart';
 
 class HostDashboardScreen extends StatefulWidget {
@@ -385,6 +388,52 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
     );
   }
 
+  Future<void> _saveToDownloads(SharedFile file) async {
+    try {
+      final sourceFile = File(file.path);
+      if (!await sourceFile.exists()) {
+        throw Exception('Source file not found');
+      }
+
+      String? downloadPath;
+      if (Platform.isAndroid) {
+        downloadPath = '/storage/emulated/0/Download';
+      } else {
+        final directory = await getDownloadsDirectory();
+        downloadPath = directory?.path;
+      }
+
+      if (downloadPath == null) {
+        throw Exception('Could not determine downloads directory');
+      }
+
+      final targetPath = '$downloadPath/${file.name}';
+
+      // Check if file already exists to avoid overwrite (optional, simple logic for now)
+      // For now, we overwrite or it might fail if we don't have permission.
+
+      await sourceFile.copy(targetPath);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Saved to Downloads: ${file.name}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildFileSection(
     BuildContext context,
     String title,
@@ -409,7 +458,9 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: files.length,
           itemBuilder: (context, index) {
-            final file = files[index];
+            final SharedFile file = files[index];
+            final isUploaded = file.isUploaded;
+
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
@@ -421,14 +472,21 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                 subtitle: Text(
                   '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<ServerBloc>().add(
-                      ServerEvent.removeFile(file.name),
-                    );
-                  },
-                ),
+                trailing: isUploaded
+                    ? IconButton(
+                        icon: const Icon(Icons.download),
+                        tooltip: 'Save to Downloads',
+                        onPressed: () => _saveToDownloads(file),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.delete),
+                        tooltip: 'Stop Sharing',
+                        onPressed: () {
+                          context.read<ServerBloc>().add(
+                            ServerEvent.removeFile(file.name),
+                          );
+                        },
+                      ),
               ),
             );
           },

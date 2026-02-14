@@ -87,6 +87,16 @@ class WebClientRepositoryImpl implements WebClientRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> deleteFile(String filename) async {
+    try {
+      await dataSource.deleteFile(filename);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.fileFailure('Failed to delete file: $e'));
+    }
+  }
+
+  @override
   Future<Either<Failure, Unit>> disconnect() async {
     try {
       dataSource.disconnect();

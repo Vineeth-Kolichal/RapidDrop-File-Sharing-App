@@ -55,7 +55,7 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -63,7 +63,8 @@ return connect(_that);case ValidatePin() when validatePin != null:
 return validatePin(_that);case Disconnect() when disconnect != null:
 return disconnect(_that);case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that);case UploadFile() when uploadFile != null:
-return uploadFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that);case DeleteFile() when deleteFile != null:
+return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh(_that);case _:
   return orElse();
@@ -83,7 +84,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,}){
 final _that = this;
 switch (_that) {
 case Connect():
@@ -91,7 +92,8 @@ return connect(_that);case ValidatePin():
 return validatePin(_that);case Disconnect():
 return disconnect(_that);case FetchFiles():
 return fetchFiles(_that);case UploadFile():
-return uploadFile(_that);case StartAutoRefresh():
+return uploadFile(_that);case DeleteFile():
+return deleteFile(_that);case StartAutoRefresh():
 return startAutoRefresh(_that);case StopAutoRefresh():
 return stopAutoRefresh(_that);case _:
   throw StateError('Unexpected subclass');
@@ -110,7 +112,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -118,7 +120,8 @@ return connect(_that);case ValidatePin() when validatePin != null:
 return validatePin(_that);case Disconnect() when disconnect != null:
 return disconnect(_that);case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that);case UploadFile() when uploadFile != null:
-return uploadFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that);case DeleteFile() when deleteFile != null:
+return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh(_that);case _:
   return null;
@@ -137,14 +140,15 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
 return validatePin(_that.pin);case Disconnect() when disconnect != null:
 return disconnect();case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
-return uploadFile(_that.file);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
+return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _:
   return orElse();
@@ -164,14 +168,15 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
 switch (_that) {
 case Connect():
 return connect(_that.ip,_that.port);case ValidatePin():
 return validatePin(_that.pin);case Disconnect():
 return disconnect();case FetchFiles():
 return fetchFiles(_that.silent);case UploadFile():
-return uploadFile(_that.file);case StartAutoRefresh():
+return uploadFile(_that.file);case DeleteFile():
+return deleteFile(_that.filename);case StartAutoRefresh():
 return startAutoRefresh();case StopAutoRefresh():
 return stopAutoRefresh();case _:
   throw StateError('Unexpected subclass');
@@ -190,14 +195,15 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
 return validatePin(_that.pin);case Disconnect() when disconnect != null:
 return disconnect();case FetchFiles() when fetchFiles != null:
 return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
-return uploadFile(_that.file);case StartAutoRefresh() when startAutoRefresh != null:
+return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
+return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _:
   return null;
@@ -499,6 +505,72 @@ class _$UploadFileCopyWithImpl<$Res>
   return _then(UploadFile(
 null == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
 as FileEntity,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class DeleteFile implements ClientEvent {
+  const DeleteFile(this.filename);
+  
+
+ final  String filename;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DeleteFileCopyWith<DeleteFile> get copyWith => _$DeleteFileCopyWithImpl<DeleteFile>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteFile&&(identical(other.filename, filename) || other.filename == filename));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,filename);
+
+@override
+String toString() {
+  return 'ClientEvent.deleteFile(filename: $filename)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DeleteFileCopyWith<$Res> implements $ClientEventCopyWith<$Res> {
+  factory $DeleteFileCopyWith(DeleteFile value, $Res Function(DeleteFile) _then) = _$DeleteFileCopyWithImpl;
+@useResult
+$Res call({
+ String filename
+});
+
+
+
+
+}
+/// @nodoc
+class _$DeleteFileCopyWithImpl<$Res>
+    implements $DeleteFileCopyWith<$Res> {
+  _$DeleteFileCopyWithImpl(this._self, this._then);
+
+  final DeleteFile _self;
+  final $Res Function(DeleteFile) _then;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? filename = null,}) {
+  return _then(DeleteFile(
+null == filename ? _self.filename : filename // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

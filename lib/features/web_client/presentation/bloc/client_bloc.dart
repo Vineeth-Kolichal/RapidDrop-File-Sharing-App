@@ -11,6 +11,8 @@ import '../../domain/usecases/get_file_list_usecase.dart';
 import '../../domain/usecases/upload_file_usecase.dart';
 import '../../domain/usecases/validate_pin_usecase.dart';
 
+import '../../domain/usecases/delete_file_usecase.dart';
+
 part 'client_bloc.freezed.dart';
 part 'client_event.dart';
 part 'client_state.dart';
@@ -21,6 +23,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   final GetFileListUseCase getFileListUseCase;
   final UploadFileUseCase uploadFileUseCase;
   final ValidatePinUseCase validatePinUseCase;
+  final DeleteFileUseCase deleteFileUseCase;
 
   Timer? _refreshTimer;
   static const _refreshInterval = Duration(seconds: 3);
@@ -30,12 +33,14 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     this.getFileListUseCase,
     this.uploadFileUseCase,
     this.validatePinUseCase,
+    this.deleteFileUseCase,
   ) : super(ClientState.initial()) {
     on<Connect>(_onConnect);
     on<ValidatePin>(_onValidatePin);
     on<Disconnect>(_onDisconnect);
     on<FetchFiles>(_onFetchFiles);
     on<UploadFile>(_onUploadFile);
+    on<DeleteFile>(_onDeleteFile);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
   }
@@ -153,6 +158,32 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       (_) async {
         emit(state.copyWith(isLoading: false));
         // Refresh file list after upload
+        add(const ClientEvent.fetchFiles());
+      },
+    );
+  }
+
+  Future<void> _onDeleteFile(
+    DeleteFile event,
+    Emitter<ClientState> emit,
+  ) async {
+    if (state.connectionInfo == null || !state.connectionInfo!.isConnected) {
+      emit(state.copyWith(error: 'Not connected to any server'));
+      return;
+    }
+
+    emit(state.copyWith(isLoading: true));
+
+    final result = await deleteFileUseCase(
+      DeleteFileParams(filename: event.filename),
+    );
+
+    await result.fold(
+      (failure) async =>
+          emit(state.copyWith(isLoading: false, error: failure.toString())),
+      (_) async {
+        emit(state.copyWith(isLoading: false));
+        // Refresh file list after deletion
         add(const ClientEvent.fetchFiles());
       },
     );

@@ -147,6 +147,39 @@ class ShelfServerDataSource {
         }
       });
 
+      // DELETE /api/files/<filename>
+      router.delete('/api/files/<filename>', (
+        Request request,
+        String filename,
+      ) async {
+        try {
+          final decodedFilename = Uri.decodeComponent(filename);
+          final fileModel = _sharedFiles.firstWhere(
+            (f) => f.name == decodedFilename,
+            orElse: () => throw Exception('File not found'),
+          );
+
+          if (fileModel.isUploaded) {
+            final file = File(fileModel.path);
+            if (await file.exists()) {
+              await file.delete();
+            }
+          }
+
+          _sharedFiles.remove(fileModel);
+          _filesController.add(List.from(_sharedFiles));
+
+          return Response.ok(
+            json.encode({'success': true, 'message': 'File deleted'}),
+            headers: {'Content-Type': 'application/json'},
+          );
+        } catch (e) {
+          return Response.internalServerError(
+            body: 'Failed to delete file: $e',
+          );
+        }
+      });
+
       // POST /upload - Receive file upload with multipart form data
       router.post('/upload', (Request request) async {
         try {
@@ -343,7 +376,19 @@ class ShelfServerDataSource {
   }
 
   Future<void> removeFile(String filename) async {
-    _sharedFiles.removeWhere((file) => file.name == filename);
+    final fileModel = _sharedFiles.firstWhere(
+      (f) => f.name == filename,
+      orElse: () => throw Exception('File not found'),
+    );
+
+    if (fileModel.isUploaded) {
+      final file = File(fileModel.path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    }
+
+    _sharedFiles.remove(fileModel);
     _filesController.add(List.from(_sharedFiles));
   }
 

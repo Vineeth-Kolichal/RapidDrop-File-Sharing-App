@@ -11,5 +11,6 @@ abstract class WebClientRepository {
   Future<Either<Failure, List<RemoteFile>>> getFileList();
   Future<Either<Failure, Unit>> downloadFile(String filename, String savePath);
   Future<Either<Failure, Unit>> uploadFile(FileEntity file);
+  Future<Either<Failure, Unit>> deleteFile(String filename);
   Future<Either<Failure, Unit>> disconnect();
 }

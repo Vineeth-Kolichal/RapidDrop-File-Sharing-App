@@ -419,12 +419,46 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
         leading: Icon(_getFileIcon(file.mimeType), color: appColors?.primary),
         title: Text(file.name),
         subtitle: Text('${(file.size / 1024 / 1024).toStringAsFixed(2)} MB'),
-        trailing: IconButton(
-          icon: const Icon(Icons.download),
-          onPressed: () {
-            _downloadFile(file.name, connectionInfo.serverUrl ?? '');
-          },
-        ),
+        trailing: file.isUploaded
+            ? IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                onPressed: () {
+                  // Confirm deletion
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Delete File'),
+                      content: Text(
+                        'Are you sure you want to delete "${file.name}"?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            context.read<ClientBloc>().add(
+                              ClientEvent.deleteFile(file.name),
+                            );
+                          },
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              )
+            : IconButton(
+                icon: const Icon(Icons.download),
+                onPressed: () {
+                  _downloadFile(file.name, connectionInfo.serverUrl ?? '');
+                },
+              ),
       ),
     );
   }

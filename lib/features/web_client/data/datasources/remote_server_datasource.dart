@@ -113,6 +113,19 @@ class RemoteServerDataSource {
     }
   }
 
+  Future<void> deleteFile(String filename) async {
+    if (_baseUrl == null) {
+      throw Exception('Not connected to any server');
+    }
+
+    try {
+      final encodedFilename = Uri.encodeComponent(filename);
+      await _dio.delete('$_baseUrl${ApiEndpoints.files}/$encodedFilename');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void disconnect() {
     _baseUrl = null;
   }

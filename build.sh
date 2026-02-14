@@ -7,6 +7,8 @@ flutter build web --release
 
 # Copy the new build to the assets directory
 cp -r build/web/* android/app/src/main/assets/web/
-# cd android
-# ./gradlew assembleRelease
-# cd ..
+# Copy custom favicon
+cp assets/favicon.png android/app/src/main/assets/web/favicon.png
+cd android
+./gradlew assembleRelease
+cd ..

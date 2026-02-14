@@ -41,6 +41,8 @@ import 'package:file_sharing/features/web_client/domain/repositories/web_client_
     as _i591;
 import 'package:file_sharing/features/web_client/domain/usecases/connect_to_server_usecase.dart'
     as _i81;
+import 'package:file_sharing/features/web_client/domain/usecases/delete_file_usecase.dart'
+    as _i752;
 import 'package:file_sharing/features/web_client/domain/usecases/get_file_list_usecase.dart'
     as _i273;
 import 'package:file_sharing/features/web_client/domain/usecases/upload_file_usecase.dart'
@@ -97,6 +99,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i81.ConnectToServerUseCase>(
       () => _i81.ConnectToServerUseCase(gh<_i591.WebClientRepository>()),
     );
+    gh.lazySingleton<_i752.DeleteFileUseCase>(
+      () => _i752.DeleteFileUseCase(gh<_i591.WebClientRepository>()),
+    );
     gh.lazySingleton<_i273.GetFileListUseCase>(
       () => _i273.GetFileListUseCase(gh<_i591.WebClientRepository>()),
     );
@@ -122,6 +127,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i273.GetFileListUseCase>(),
         gh<_i497.UploadFileUseCase>(),
         gh<_i1015.ValidatePinUseCase>(),
+        gh<_i752.DeleteFileUseCase>(),
       ),
     );
     return this;
