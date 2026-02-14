@@ -45,7 +45,15 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<DeleteFile>(_onDeleteFile);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
+    on<_UpdateUploadProgress>(_onUpdateUploadProgress);
     on<_NotificationReceived>(_onNotificationReceived);
+  }
+
+  void _onUpdateUploadProgress(
+    _UpdateUploadProgress event,
+    Emitter<ClientState> emit,
+  ) {
+    emit(state.copyWith(uploadProgress: event.progress));
   }
 
   void _onNotificationReceived(
@@ -158,15 +166,22 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       return;
     }
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isLoading: true, uploadProgress: 0.0));
 
-    final result = await uploadFileUseCase(UploadFileParams(file: event.file));
+    final result = await uploadFileUseCase(
+      UploadFileParams(
+        file: event.file,
+        onSendProgress: (sent, total) {
+          add(ClientEvent.updateUploadProgress(sent / total));
+        },
+      ),
+    );
 
     await result.fold(
       (failure) async =>
           emit(state.copyWith(isLoading: false, error: failure.error)),
       (_) async {
-        emit(state.copyWith(isLoading: false));
+        emit(state.copyWith(isLoading: false, uploadProgress: null));
         // Refresh file list after upload
         add(const ClientEvent.fetchFiles());
       },

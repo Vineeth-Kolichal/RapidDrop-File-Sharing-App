@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/client_bloc.dart';
+import '../../../../common/widgets/loading.dart';
 
 class ClientDashboardScreen extends StatefulWidget {
   const ClientDashboardScreen({super.key});
@@ -122,29 +123,40 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               }
             },
             builder: (context, state) {
-              if (state.connectionInfo == null ||
-                  !state.connectionInfo!.isConnected) {
-                return _buildPinEntry(context, state);
-              }
+              return Loading(
+                isLoading: state.isLoading,
+                progress: state.uploadProgress,
+                message: state.uploadProgress != null ? 'Uploading...' : null,
+                child: Builder(
+                  builder: (context) {
+                    if (state.connectionInfo == null ||
+                        !state.connectionInfo!.isConnected) {
+                      return _buildPinEntry(context, state);
+                    }
 
-              final fileList = state.fileList ?? [];
-              final hostFiles = fileList.where((f) => !f.isUploaded).toList();
-              final uploadedFiles = fileList
-                  .where((f) => f.isUploaded)
-                  .toList();
+                    final fileList = state.fileList ?? [];
+                    final hostFiles = fileList
+                        .where((f) => !f.isUploaded)
+                        .toList();
+                    final uploadedFiles = fileList
+                        .where((f) => f.isUploaded)
+                        .toList();
 
-              return Responsive(
-                desktop: _buildDesktopLayout(
-                  context,
-                  state,
-                  hostFiles,
-                  uploadedFiles,
-                ),
-                mobile: _buildMobileLayout(
-                  context,
-                  state,
-                  hostFiles,
-                  uploadedFiles,
+                    return Responsive(
+                      desktop: _buildDesktopLayout(
+                        context,
+                        state,
+                        hostFiles,
+                        uploadedFiles,
+                      ),
+                      mobile: _buildMobileLayout(
+                        context,
+                        state,
+                        hostFiles,
+                        uploadedFiles,
+                      ),
+                    );
+                  },
                 ),
               );
             },

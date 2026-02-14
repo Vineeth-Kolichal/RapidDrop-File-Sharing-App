@@ -15,15 +15,19 @@ class UploadFileUseCase implements UseCase<Unit, UploadFileParams> {
 
   @override
   Future<Either<Failure, Unit>> call(UploadFileParams params) async {
-    return await repository.uploadFile(params.file);
+    return await repository.uploadFile(
+      params.file,
+      onSendProgress: params.onSendProgress,
+    );
   }
 }
 
 class UploadFileParams extends Equatable {
   final FileEntity file;
+  final void Function(int, int)? onSendProgress;
 
-  const UploadFileParams({required this.file});
+  const UploadFileParams({required this.file, this.onSendProgress});
 
   @override
-  List<Object?> get props => [file];
+  List<Object?> get props => [file, onSendProgress];
 }

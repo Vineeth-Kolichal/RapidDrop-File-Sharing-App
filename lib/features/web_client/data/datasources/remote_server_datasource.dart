@@ -120,7 +120,10 @@ class RemoteServerDataSource {
     }
   }
 
-  Future<void> uploadFile(FileEntity file) async {
+  Future<void> uploadFile(
+    FileEntity file, {
+    void Function(int, int)? onSendProgress,
+  }) async {
     if (_baseUrl == null) {
       throw Exception('Not connected to any server');
     }
@@ -148,7 +151,11 @@ class RemoteServerDataSource {
         throw Exception('No file data provided');
       }
 
-      await _dio.post('$_baseUrl${ApiEndpoints.upload}', data: formData);
+      await _dio.post(
+        '$_baseUrl${ApiEndpoints.upload}',
+        data: formData,
+        onSendProgress: onSendProgress,
+      );
     } catch (e) {
       rethrow;
     }
