@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
@@ -91,25 +92,44 @@ class ConnectionDetailsCard extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: appColors?.primary?.withValues(alpha: 0.1),
-              // borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.link, color: appColors?.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    serverInfo.serverUrl,
-                    style: context.bodyMedium()?.copyWith(
-                      fontFamily: 'monospace',
+          //url section
+          //url section
+          InkWell(
+            onTap: () {
+              Clipboard.setData(ClipboardData(text: serverInfo.serverUrl));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Server URL copied to clipboard'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: appColors?.primary?.withValues(alpha: 0.1),
+                // borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.link, color: appColors?.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      serverInfo.serverUrl,
+                      style: context.bodyMedium()?.copyWith(
+                        fontFamily: 'monospace',
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.copy,
+                    size: 16,
+                    color: appColors?.primary?.withValues(alpha: 0.5),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
