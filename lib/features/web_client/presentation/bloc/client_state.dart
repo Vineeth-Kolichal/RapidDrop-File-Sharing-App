@@ -8,6 +8,7 @@ sealed class ClientState with _$ClientState {
     ConnectionInfo? connectionInfo,
     List<RemoteFile>? fileList,
     double? uploadProgress,
+    bool? isDarkMode,
   }) = _ClientState;
 
   factory ClientState.initial() => const ClientState(isLoading: false);

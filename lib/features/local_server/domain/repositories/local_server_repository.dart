@@ -10,4 +10,5 @@ abstract class LocalServerRepository {
   Future<Either<Failure, Unit>> addFileToShare(String filePath);
   Future<Either<Failure, Unit>> removeFile(String filename);
   Stream<List<SharedFile>> get filesStream;
+  Future<Either<Failure, Unit>> broadcastThemeChange(bool isDarkMode);
 }

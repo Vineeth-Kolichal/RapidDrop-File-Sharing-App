@@ -62,6 +62,15 @@ class ShelfServerDataSource {
           channel.stream.listen(
             (message) {
               print('Received WS message: $message');
+              try {
+                final data = json.decode(message);
+                if (data['type'] == 'theme_sync') {
+                  final isDarkMode = data['isDarkMode'] as bool;
+                  _handleThemeSync(isDarkMode, source: channel);
+                }
+              } catch (e) {
+                print('Error partins WS message: $e');
+              }
             },
             onDone: () {
               _clients.remove(channel);
@@ -436,6 +445,24 @@ class ShelfServerDataSource {
     print('Notifying ${_clients.length} clients of update');
     for (final client in _clients) {
       client.sink.add(json.encode({'type': 'refresh'}));
+    }
+  }
+
+  void broadcastThemeChange(bool isDarkMode) {
+    _handleThemeSync(isDarkMode, source: null);
+  }
+
+  void _handleThemeSync(bool isDarkMode, {WebSocketChannel? source}) {
+    print('Broadcasting theme change: isDark=$isDarkMode');
+    final message = json.encode({
+      'type': 'theme_sync',
+      'isDarkMode': isDarkMode,
+    });
+
+    for (final client in _clients) {
+      if (client != source) {
+        client.sink.add(message);
+      }
     }
   }
 

@@ -14,4 +14,5 @@ class ClientEvent with _$ClientEvent {
   const factory ClientEvent.updateUploadProgress(double progress) =
       _UpdateUploadProgress;
   const factory ClientEvent.notificationReceived() = _NotificationReceived;
+  const factory ClientEvent.themeChanged(bool isDark) = _ThemeChanged;
 }

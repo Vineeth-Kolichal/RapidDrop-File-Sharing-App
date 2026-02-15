@@ -12,8 +12,8 @@ class RemoteServerDataSource {
   final Dio _dio;
   String? _baseUrl;
   WebSocketChannel? _channel;
-  final _notificationsController = StreamController<void>.broadcast();
-  Stream<void> get notifications => _notificationsController.stream;
+  final _notificationsController = StreamController<dynamic>.broadcast();
+  Stream<dynamic> get notifications => _notificationsController.stream;
 
   RemoteServerDataSource(this._dio);
 
@@ -64,8 +64,7 @@ class RemoteServerDataSource {
         (message) {
           print('WS Message: $message');
           if (message != null) {
-            // For now, any message triggers a refresh
-            _notificationsController.add(null);
+            _notificationsController.add(message);
           }
         },
         onError: (e) => print('WS Error: $e'),

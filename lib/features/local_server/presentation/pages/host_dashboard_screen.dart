@@ -114,6 +114,9 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
                   SharedPrefsServices.instance.setThemeMode(
                     newMode == ThemeMode.dark,
                   );
+                  context.read<ServerBloc>().add(
+                    ServerEvent.themeChanged(newMode == ThemeMode.dark),
+                  );
                 },
               );
             },

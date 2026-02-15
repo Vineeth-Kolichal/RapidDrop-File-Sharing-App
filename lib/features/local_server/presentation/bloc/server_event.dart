@@ -9,4 +9,5 @@ class ServerEvent with _$ServerEvent {
   const factory ServerEvent.getServerInfo() = GetServerInfo;
   const factory ServerEvent.sharedFilesUpdated(List<SharedFile> files) =
       SharedFilesUpdated;
+  const factory ServerEvent.themeChanged(bool isDark) = ThemeChanged;
 }

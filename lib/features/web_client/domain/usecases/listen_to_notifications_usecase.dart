@@ -7,7 +7,7 @@ class ListenToNotificationsUseCase {
 
   ListenToNotificationsUseCase(this.repository);
 
-  Stream<void> call() {
+  Stream<dynamic> call() {
     return repository.notifications;
   }
 }

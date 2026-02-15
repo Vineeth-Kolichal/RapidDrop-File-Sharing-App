@@ -10,6 +10,7 @@ import 'dart:async';
 import '../../domain/usecases/add_file_usecase.dart';
 import '../../domain/usecases/remove_file_usecase.dart';
 import '../../domain/usecases/watch_shared_files_usecase.dart';
+import '../../domain/usecases/broadcast_theme_change_usecase.dart';
 import '../../domain/entities/shared_file.dart';
 
 part 'server_bloc.freezed.dart';
@@ -24,6 +25,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
   final AddFileUseCase addFileUseCase;
   final RemoveFileUseCase removeFileUseCase;
   final WatchSharedFilesUseCase watchSharedFilesUseCase;
+  final BroadcastThemeChangeUseCase broadcastThemeChangeUseCase;
   StreamSubscription<List<SharedFile>>? _filesSubscription;
 
   ServerBloc(
@@ -33,6 +35,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     this.addFileUseCase,
     this.removeFileUseCase,
     this.watchSharedFilesUseCase,
+    this.broadcastThemeChangeUseCase,
   ) : super(ServerState.initial()) {
     on<StartServer>(_onStartServer);
     on<StopServer>(_onStopServer);
@@ -40,12 +43,22 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
     on<RemoveFile>(_onRemoveFile);
     on<GetServerInfo>(_onGetServerInfo);
     on<SharedFilesUpdated>(_onSharedFilesUpdated);
+    on<ThemeChanged>(_onThemeChanged);
   }
 
   @override
   Future<void> close() {
     _filesSubscription?.cancel();
     return super.close();
+  }
+
+  Future<void> _onThemeChanged(
+    ThemeChanged event,
+    Emitter<ServerState> emit,
+  ) async {
+    await broadcastThemeChangeUseCase(
+      BroadcastThemeChangeParams(isDarkMode: event.isDark),
+    );
   }
 
   Future<void> _onStartServer(

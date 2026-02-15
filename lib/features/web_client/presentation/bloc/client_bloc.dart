@@ -13,6 +13,7 @@ import '../../domain/usecases/validate_pin_usecase.dart';
 
 import '../../domain/usecases/delete_file_usecase.dart';
 import '../../domain/usecases/listen_to_notifications_usecase.dart';
+import 'dart:convert';
 
 part 'client_bloc.freezed.dart';
 part 'client_event.dart';
@@ -47,6 +48,11 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<StopAutoRefresh>(_onStopAutoRefresh);
     on<_UpdateUploadProgress>(_onUpdateUploadProgress);
     on<_NotificationReceived>(_onNotificationReceived);
+    on<_ThemeChanged>(_onThemeChanged);
+  }
+
+  void _onThemeChanged(_ThemeChanged event, Emitter<ClientState> emit) {
+    emit(state.copyWith(isDarkMode: event.isDark));
   }
 
   void _onUpdateUploadProgress(
@@ -219,8 +225,24 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     Emitter<ClientState> emit,
   ) async {
     await _notificationSubscription?.cancel();
-    _notificationSubscription = listenToNotificationsUseCase().listen((_) {
-      add(const ClientEvent.notificationReceived());
+    _notificationSubscription = listenToNotificationsUseCase().listen((
+      message,
+    ) {
+      if (message is String) {
+        try {
+          final data = json.decode(message);
+          if (data['type'] == 'theme_sync') {
+            add(ClientEvent.themeChanged(data['isDarkMode'] as bool));
+          } else {
+            add(const ClientEvent.notificationReceived());
+          }
+        } catch (e) {
+          // Fallback for simple string messages or other formats
+          add(const ClientEvent.notificationReceived());
+        }
+      } else {
+        add(const ClientEvent.notificationReceived());
+      }
     });
   }
 

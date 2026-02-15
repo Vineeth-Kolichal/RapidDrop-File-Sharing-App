@@ -22,6 +22,8 @@ import 'package:file_sharing/features/local_server/domain/repositories/local_ser
     as _i806;
 import 'package:file_sharing/features/local_server/domain/usecases/add_file_usecase.dart'
     as _i245;
+import 'package:file_sharing/features/local_server/domain/usecases/broadcast_theme_change_usecase.dart'
+    as _i108;
 import 'package:file_sharing/features/local_server/domain/usecases/get_server_info_usecase.dart'
     as _i962;
 import 'package:file_sharing/features/local_server/domain/usecases/remove_file_usecase.dart'
@@ -87,6 +89,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i245.AddFileUseCase>(
       () => _i245.AddFileUseCase(gh<_i806.LocalServerRepository>()),
     );
+    gh.lazySingleton<_i108.BroadcastThemeChangeUseCase>(
+      () =>
+          _i108.BroadcastThemeChangeUseCase(gh<_i806.LocalServerRepository>()),
+    );
     gh.lazySingleton<_i962.GetServerInfoUseCase>(
       () => _i962.GetServerInfoUseCase(gh<_i806.LocalServerRepository>()),
     );
@@ -128,6 +134,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i245.AddFileUseCase>(),
         gh<_i542.RemoveFileUseCase>(),
         gh<_i676.WatchSharedFilesUseCase>(),
+        gh<_i108.BroadcastThemeChangeUseCase>(),
       ),
     );
     gh.factory<_i700.ClientBloc>(

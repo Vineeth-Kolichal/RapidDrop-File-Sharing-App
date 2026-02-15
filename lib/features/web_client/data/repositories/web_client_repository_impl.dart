@@ -16,7 +16,7 @@ class WebClientRepositoryImpl implements WebClientRepository {
   WebClientRepositoryImpl(this.dataSource);
 
   @override
-  Stream<void> get notifications => dataSource.notifications;
+  Stream<dynamic> get notifications => dataSource.notifications;
 
   @override
   Future<Either<Failure, ConnectionInfo>> connectToServer(
