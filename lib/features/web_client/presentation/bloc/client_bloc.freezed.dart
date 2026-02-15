@@ -55,7 +55,7 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,TResult Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult Function( _NotificationReceived value)?  notificationReceived,TResult Function( _ThemeChanged value)?  themeChanged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,TResult Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult Function( _NotificationReceived value)?  notificationReceived,TResult Function( _ThemeChanged value)?  themeChanged,TResult Function( _ConnectionStatusChanged value)?  connectionStatusChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -69,7 +69,8 @@ return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != nu
 return stopAutoRefresh(_that);case _UpdateUploadProgress() when updateUploadProgress != null:
 return updateUploadProgress(_that);case _NotificationReceived() when notificationReceived != null:
 return notificationReceived(_that);case _ThemeChanged() when themeChanged != null:
-return themeChanged(_that);case _:
+return themeChanged(_that);case _ConnectionStatusChanged() when connectionStatusChanged != null:
+return connectionStatusChanged(_that);case _:
   return orElse();
 
 }
@@ -87,7 +88,7 @@ return themeChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,required TResult Function( _UpdateUploadProgress value)  updateUploadProgress,required TResult Function( _NotificationReceived value)  notificationReceived,required TResult Function( _ThemeChanged value)  themeChanged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,required TResult Function( _UpdateUploadProgress value)  updateUploadProgress,required TResult Function( _NotificationReceived value)  notificationReceived,required TResult Function( _ThemeChanged value)  themeChanged,required TResult Function( _ConnectionStatusChanged value)  connectionStatusChanged,}){
 final _that = this;
 switch (_that) {
 case Connect():
@@ -101,7 +102,8 @@ return startAutoRefresh(_that);case StopAutoRefresh():
 return stopAutoRefresh(_that);case _UpdateUploadProgress():
 return updateUploadProgress(_that);case _NotificationReceived():
 return notificationReceived(_that);case _ThemeChanged():
-return themeChanged(_that);case _:
+return themeChanged(_that);case _ConnectionStatusChanged():
+return connectionStatusChanged(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -118,7 +120,7 @@ return themeChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,TResult? Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult? Function( _NotificationReceived value)?  notificationReceived,TResult? Function( _ThemeChanged value)?  themeChanged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,TResult? Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult? Function( _NotificationReceived value)?  notificationReceived,TResult? Function( _ThemeChanged value)?  themeChanged,TResult? Function( _ConnectionStatusChanged value)?  connectionStatusChanged,}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -132,7 +134,8 @@ return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != nu
 return stopAutoRefresh(_that);case _UpdateUploadProgress() when updateUploadProgress != null:
 return updateUploadProgress(_that);case _NotificationReceived() when notificationReceived != null:
 return notificationReceived(_that);case _ThemeChanged() when themeChanged != null:
-return themeChanged(_that);case _:
+return themeChanged(_that);case _ConnectionStatusChanged() when connectionStatusChanged != null:
+return connectionStatusChanged(_that);case _:
   return null;
 
 }
@@ -149,7 +152,7 @@ return themeChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,TResult Function( double progress)?  updateUploadProgress,TResult Function()?  notificationReceived,TResult Function( bool isDark)?  themeChanged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,TResult Function( double progress)?  updateUploadProgress,TResult Function()?  notificationReceived,TResult Function( bool isDark)?  themeChanged,TResult Function( bool isConnected)?  connectionStatusChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -162,7 +165,8 @@ return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _UpdateUploadProgress() when updateUploadProgress != null:
 return updateUploadProgress(_that.progress);case _NotificationReceived() when notificationReceived != null:
 return notificationReceived();case _ThemeChanged() when themeChanged != null:
-return themeChanged(_that.isDark);case _:
+return themeChanged(_that.isDark);case _ConnectionStatusChanged() when connectionStatusChanged != null:
+return connectionStatusChanged(_that.isConnected);case _:
   return orElse();
 
 }
@@ -180,7 +184,7 @@ return themeChanged(_that.isDark);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,required TResult Function( double progress)  updateUploadProgress,required TResult Function()  notificationReceived,required TResult Function( bool isDark)  themeChanged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,required TResult Function( double progress)  updateUploadProgress,required TResult Function()  notificationReceived,required TResult Function( bool isDark)  themeChanged,required TResult Function( bool isConnected)  connectionStatusChanged,}) {final _that = this;
 switch (_that) {
 case Connect():
 return connect(_that.ip,_that.port);case ValidatePin():
@@ -193,7 +197,8 @@ return startAutoRefresh();case StopAutoRefresh():
 return stopAutoRefresh();case _UpdateUploadProgress():
 return updateUploadProgress(_that.progress);case _NotificationReceived():
 return notificationReceived();case _ThemeChanged():
-return themeChanged(_that.isDark);case _:
+return themeChanged(_that.isDark);case _ConnectionStatusChanged():
+return connectionStatusChanged(_that.isConnected);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,7 +215,7 @@ return themeChanged(_that.isDark);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,TResult? Function( double progress)?  updateUploadProgress,TResult? Function()?  notificationReceived,TResult? Function( bool isDark)?  themeChanged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,TResult? Function( double progress)?  updateUploadProgress,TResult? Function()?  notificationReceived,TResult? Function( bool isDark)?  themeChanged,TResult? Function( bool isConnected)?  connectionStatusChanged,}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -223,7 +228,8 @@ return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
 return stopAutoRefresh();case _UpdateUploadProgress() when updateUploadProgress != null:
 return updateUploadProgress(_that.progress);case _NotificationReceived() when notificationReceived != null:
 return notificationReceived();case _ThemeChanged() when themeChanged != null:
-return themeChanged(_that.isDark);case _:
+return themeChanged(_that.isDark);case _ConnectionStatusChanged() when connectionStatusChanged != null:
+return connectionStatusChanged(_that.isConnected);case _:
   return null;
 
 }
@@ -824,9 +830,75 @@ as bool,
 }
 
 /// @nodoc
+
+
+class _ConnectionStatusChanged implements ClientEvent {
+  const _ConnectionStatusChanged(this.isConnected);
+  
+
+ final  bool isConnected;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ConnectionStatusChangedCopyWith<_ConnectionStatusChanged> get copyWith => __$ConnectionStatusChangedCopyWithImpl<_ConnectionStatusChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConnectionStatusChanged&&(identical(other.isConnected, isConnected) || other.isConnected == isConnected));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isConnected);
+
+@override
+String toString() {
+  return 'ClientEvent.connectionStatusChanged(isConnected: $isConnected)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ConnectionStatusChangedCopyWith<$Res> implements $ClientEventCopyWith<$Res> {
+  factory _$ConnectionStatusChangedCopyWith(_ConnectionStatusChanged value, $Res Function(_ConnectionStatusChanged) _then) = __$ConnectionStatusChangedCopyWithImpl;
+@useResult
+$Res call({
+ bool isConnected
+});
+
+
+
+
+}
+/// @nodoc
+class __$ConnectionStatusChangedCopyWithImpl<$Res>
+    implements _$ConnectionStatusChangedCopyWith<$Res> {
+  __$ConnectionStatusChangedCopyWithImpl(this._self, this._then);
+
+  final _ConnectionStatusChanged _self;
+  final $Res Function(_ConnectionStatusChanged) _then;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? isConnected = null,}) {
+  return _then(_ConnectionStatusChanged(
+null == isConnected ? _self.isConnected : isConnected // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$ClientState {
 
- bool get isLoading; String? get error; ConnectionInfo? get connectionInfo; List<RemoteFile>? get fileList; double? get uploadProgress; bool? get isDarkMode;
+ bool get isLoading; String? get error; ConnectionInfo? get connectionInfo; List<RemoteFile>? get fileList; double? get uploadProgress; bool? get isDarkMode; bool get isWebSocketConnected;
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -837,16 +909,16 @@ $ClientStateCopyWith<ClientState> get copyWith => _$ClientStateCopyWithImpl<Clie
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other.fileList, fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other.fileList, fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode)&&(identical(other.isWebSocketConnected, isWebSocketConnected) || other.isWebSocketConnected == isWebSocketConnected));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(fileList),uploadProgress,isDarkMode);
+int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(fileList),uploadProgress,isDarkMode,isWebSocketConnected);
 
 @override
 String toString() {
-  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress, isDarkMode: $isDarkMode)';
+  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress, isDarkMode: $isDarkMode, isWebSocketConnected: $isWebSocketConnected)';
 }
 
 
@@ -857,7 +929,7 @@ abstract mixin class $ClientStateCopyWith<$Res>  {
   factory $ClientStateCopyWith(ClientState value, $Res Function(ClientState) _then) = _$ClientStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress, bool? isDarkMode
+ bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress, bool? isDarkMode, bool isWebSocketConnected
 });
 
 
@@ -874,7 +946,7 @@ class _$ClientStateCopyWithImpl<$Res>
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,Object? isDarkMode = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,Object? isDarkMode = freezed,Object? isWebSocketConnected = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
@@ -882,7 +954,8 @@ as String?,connectionInfo: freezed == connectionInfo ? _self.connectionInfo : co
 as ConnectionInfo?,fileList: freezed == fileList ? _self.fileList : fileList // ignore: cast_nullable_to_non_nullable
 as List<RemoteFile>?,uploadProgress: freezed == uploadProgress ? _self.uploadProgress : uploadProgress // ignore: cast_nullable_to_non_nullable
 as double?,isDarkMode: freezed == isDarkMode ? _self.isDarkMode : isDarkMode // ignore: cast_nullable_to_non_nullable
-as bool?,
+as bool?,isWebSocketConnected: null == isWebSocketConnected ? _self.isWebSocketConnected : isWebSocketConnected // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -964,10 +1037,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode,  bool isWebSocketConnected)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClientState() when $default != null:
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode);case _:
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode,_that.isWebSocketConnected);case _:
   return orElse();
 
 }
@@ -985,10 +1058,10 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode,  bool isWebSocketConnected)  $default,) {final _that = this;
 switch (_that) {
 case _ClientState():
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode);}
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode,_that.isWebSocketConnected);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1002,10 +1075,10 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress,  bool? isDarkMode,  bool isWebSocketConnected)?  $default,) {final _that = this;
 switch (_that) {
 case _ClientState() when $default != null:
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode);case _:
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress,_that.isDarkMode,_that.isWebSocketConnected);case _:
   return null;
 
 }
@@ -1017,7 +1090,7 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,
 
 
 class _ClientState implements ClientState {
-  const _ClientState({required this.isLoading, this.error, this.connectionInfo, final  List<RemoteFile>? fileList, this.uploadProgress, this.isDarkMode}): _fileList = fileList;
+  const _ClientState({required this.isLoading, this.error, this.connectionInfo, final  List<RemoteFile>? fileList, this.uploadProgress, this.isDarkMode, this.isWebSocketConnected = false}): _fileList = fileList;
   
 
 @override final  bool isLoading;
@@ -1034,6 +1107,7 @@ class _ClientState implements ClientState {
 
 @override final  double? uploadProgress;
 @override final  bool? isDarkMode;
+@override@JsonKey() final  bool isWebSocketConnected;
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
@@ -1045,16 +1119,16 @@ _$ClientStateCopyWith<_ClientState> get copyWith => __$ClientStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other._fileList, _fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other._fileList, _fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode)&&(identical(other.isWebSocketConnected, isWebSocketConnected) || other.isWebSocketConnected == isWebSocketConnected));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(_fileList),uploadProgress,isDarkMode);
+int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(_fileList),uploadProgress,isDarkMode,isWebSocketConnected);
 
 @override
 String toString() {
-  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress, isDarkMode: $isDarkMode)';
+  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress, isDarkMode: $isDarkMode, isWebSocketConnected: $isWebSocketConnected)';
 }
 
 
@@ -1065,7 +1139,7 @@ abstract mixin class _$ClientStateCopyWith<$Res> implements $ClientStateCopyWith
   factory _$ClientStateCopyWith(_ClientState value, $Res Function(_ClientState) _then) = __$ClientStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress, bool? isDarkMode
+ bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress, bool? isDarkMode, bool isWebSocketConnected
 });
 
 
@@ -1082,7 +1156,7 @@ class __$ClientStateCopyWithImpl<$Res>
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,Object? isDarkMode = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,Object? isDarkMode = freezed,Object? isWebSocketConnected = null,}) {
   return _then(_ClientState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
@@ -1090,7 +1164,8 @@ as String?,connectionInfo: freezed == connectionInfo ? _self.connectionInfo : co
 as ConnectionInfo?,fileList: freezed == fileList ? _self._fileList : fileList // ignore: cast_nullable_to_non_nullable
 as List<RemoteFile>?,uploadProgress: freezed == uploadProgress ? _self.uploadProgress : uploadProgress // ignore: cast_nullable_to_non_nullable
 as double?,isDarkMode: freezed == isDarkMode ? _self.isDarkMode : isDarkMode // ignore: cast_nullable_to_non_nullable
-as bool?,
+as bool?,isWebSocketConnected: null == isWebSocketConnected ? _self.isWebSocketConnected : isWebSocketConnected // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

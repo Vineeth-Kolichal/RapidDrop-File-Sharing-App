@@ -48,6 +48,8 @@ import 'package:file_sharing/features/web_client/domain/usecases/delete_file_use
     as _i752;
 import 'package:file_sharing/features/web_client/domain/usecases/get_file_list_usecase.dart'
     as _i273;
+import 'package:file_sharing/features/web_client/domain/usecases/listen_to_connection_status_usecase.dart'
+    as _i207;
 import 'package:file_sharing/features/web_client/domain/usecases/listen_to_notifications_usecase.dart'
     as _i387;
 import 'package:file_sharing/features/web_client/domain/usecases/upload_file_usecase.dart'
@@ -117,6 +119,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i273.GetFileListUseCase>(
       () => _i273.GetFileListUseCase(gh<_i591.WebClientRepository>()),
     );
+    gh.lazySingleton<_i207.ListenToConnectionStatusUseCase>(
+      () => _i207.ListenToConnectionStatusUseCase(
+        gh<_i591.WebClientRepository>(),
+      ),
+    );
     gh.lazySingleton<_i387.ListenToNotificationsUseCase>(
       () => _i387.ListenToNotificationsUseCase(gh<_i591.WebClientRepository>()),
     );
@@ -145,6 +152,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1015.ValidatePinUseCase>(),
         gh<_i752.DeleteFileUseCase>(),
         gh<_i387.ListenToNotificationsUseCase>(),
+        gh<_i207.ListenToConnectionStatusUseCase>(),
       ),
     );
     return this;

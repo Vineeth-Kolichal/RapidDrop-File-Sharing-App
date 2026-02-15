@@ -13,6 +13,7 @@ import '../../domain/usecases/validate_pin_usecase.dart';
 
 import '../../domain/usecases/delete_file_usecase.dart';
 import '../../domain/usecases/listen_to_notifications_usecase.dart';
+import '../../domain/usecases/listen_to_connection_status_usecase.dart';
 import 'dart:convert';
 
 part 'client_bloc.freezed.dart';
@@ -27,8 +28,10 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   final ValidatePinUseCase validatePinUseCase;
   final DeleteFileUseCase deleteFileUseCase;
   final ListenToNotificationsUseCase listenToNotificationsUseCase;
+  final ListenToConnectionStatusUseCase listenToConnectionStatusUseCase;
 
   StreamSubscription? _notificationSubscription;
+  StreamSubscription? _connectionStatusSubscription;
 
   ClientBloc(
     this.connectToServerUseCase,
@@ -37,6 +40,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     this.validatePinUseCase,
     this.deleteFileUseCase,
     this.listenToNotificationsUseCase,
+    this.listenToConnectionStatusUseCase,
   ) : super(ClientState.initial()) {
     on<Connect>(_onConnect);
     on<ValidatePin>(_onValidatePin);
@@ -49,6 +53,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<_UpdateUploadProgress>(_onUpdateUploadProgress);
     on<_NotificationReceived>(_onNotificationReceived);
     on<_ThemeChanged>(_onThemeChanged);
+    on<_ConnectionStatusChanged>(_onConnectionStatusChanged);
   }
 
   void _onThemeChanged(_ThemeChanged event, Emitter<ClientState> emit) {
@@ -86,6 +91,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
             isLoading: false,
             connectionInfo: connectionInfo,
             error: null,
+            isWebSocketConnected: true,
           ),
         );
 
@@ -114,6 +120,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
             isLoading: false,
             connectionInfo: connectionInfo,
             error: null,
+            isWebSocketConnected: true,
           ),
         );
 
@@ -244,16 +251,33 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
         add(const ClientEvent.notificationReceived());
       }
     });
+
+    await _connectionStatusSubscription?.cancel();
+    _connectionStatusSubscription = listenToConnectionStatusUseCase().listen((
+      isConnected,
+    ) {
+      add(ClientEvent.connectionStatusChanged(isConnected));
+    });
+  }
+
+  void _onConnectionStatusChanged(
+    _ConnectionStatusChanged event,
+    Emitter<ClientState> emit,
+  ) {
+    emit(state.copyWith(isWebSocketConnected: event.isConnected));
   }
 
   void _onStopAutoRefresh(StopAutoRefresh event, Emitter<ClientState> emit) {
     _notificationSubscription?.cancel();
     _notificationSubscription = null;
+    _connectionStatusSubscription?.cancel();
+    _connectionStatusSubscription = null;
   }
 
   @override
   Future<void> close() {
     _notificationSubscription?.cancel();
+    _connectionStatusSubscription?.cancel();
     return super.close();
   }
 }

@@ -15,6 +15,9 @@ class RemoteServerDataSource {
   final _notificationsController = StreamController<dynamic>.broadcast();
   Stream<dynamic> get notifications => _notificationsController.stream;
 
+  final _connectionStatusController = StreamController<bool>.broadcast();
+  Stream<bool> get connectionStatus => _connectionStatusController.stream;
+
   RemoteServerDataSource(this._dio);
 
   void setBaseUrl(String ip, int port) {
@@ -67,9 +70,19 @@ class RemoteServerDataSource {
             _notificationsController.add(message);
           }
         },
-        onError: (e) => print('WS Error: $e'),
-        onDone: () => print('WS Disconnected'),
+        onError: (e) {
+          print('WS Error: $e');
+          _connectionStatusController.add(false);
+          _baseUrl = null;
+        },
+        onDone: () {
+          print('WS Disconnected');
+          _connectionStatusController.add(false);
+          _baseUrl = null;
+        },
       );
+
+      _connectionStatusController.add(true);
     } catch (e) {
       print('WebSocket connection failed: $e');
     }
@@ -177,6 +190,7 @@ class RemoteServerDataSource {
     _baseUrl = null;
     _channel?.sink.close();
     _channel = null;
+    _connectionStatusController.add(false);
   }
 
   bool get isConnected => _baseUrl != null;

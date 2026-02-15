@@ -19,6 +19,9 @@ class WebClientRepositoryImpl implements WebClientRepository {
   Stream<dynamic> get notifications => dataSource.notifications;
 
   @override
+  Stream<bool> get connectionStatus => dataSource.connectionStatus;
+
+  @override
   Future<Either<Failure, ConnectionInfo>> connectToServer(
     String ip,
     int port,

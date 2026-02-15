@@ -9,6 +9,7 @@ sealed class ClientState with _$ClientState {
     List<RemoteFile>? fileList,
     double? uploadProgress,
     bool? isDarkMode,
+    @Default(false) bool isWebSocketConnected,
   }) = _ClientState;
 
   factory ClientState.initial() => const ClientState(isLoading: false);
