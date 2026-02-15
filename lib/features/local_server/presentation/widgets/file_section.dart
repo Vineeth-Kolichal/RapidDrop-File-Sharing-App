@@ -178,23 +178,43 @@ class _FileSectionState extends State<FileSection> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 16),
+          if (!file.mimeType.startsWith('image/')) const SizedBox(height: 16),
           Expanded(
-            child: Center(
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: fileTypeColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  _getFileIcon(file.mimeType),
-                  color: fileTypeColor,
-                  size: 32,
-                ),
-              ),
-            ),
+            child: file.mimeType.startsWith('image/')
+                ? ClipRRect(
+                    borderRadius: BorderRadiusGeometry.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Image.file(
+                      width: double.infinity,
+                      File(file.path),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          _getFileIcon(file.mimeType),
+                          color: fileTypeColor,
+                          size: 32,
+                        );
+                      },
+                    ),
+                  )
+                : Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: fileTypeColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Icon(
+                        _getFileIcon(file.mimeType),
+                        color: fileTypeColor,
+                        size: 32,
+                      ),
+                    ),
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
