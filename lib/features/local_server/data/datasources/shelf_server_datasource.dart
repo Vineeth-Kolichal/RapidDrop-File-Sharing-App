@@ -131,13 +131,29 @@ class ShelfServerDataSource {
 
       // API: GET /api/files - List all available files
       router.get('/api/files', (Request request) {
+        // Extract session token to identify client
+        final authHeader = request.headers['Authorization'];
+        String? sessionToken;
+        if (authHeader != null && authHeader.startsWith('Bearer ')) {
+          sessionToken = authHeader.substring(7);
+        }
+
         final filesList = _sharedFiles.map((file) {
+          // Calculate visibility and categorization for the requesting client:
+          // 1. If ownerId is NOT null and matches sessionToken -> It is MY file.
+          //    We send 'isUploaded: true' so it appears in "My Uploads".
+          // 2. If ownerId is null (Host file) OR ownerId != sessionToken (Other client's file)
+          //    We send 'isUploaded: false' so it appears in "Host Files".
+
+          final isMyFile = file.ownerId != null && file.ownerId == sessionToken;
+
           return {
             'name': file.name,
             'size': file.size,
             'mimeType': file.mimeType,
             'addedAt': file.addedAt.toIso8601String(),
-            'isUploaded': file.isUploaded,
+            'isUploaded':
+                isMyFile, // Dynamic mapping for client UI categorization
           };
         }).toList();
 
@@ -192,11 +208,32 @@ class ShelfServerDataSource {
         String filename,
       ) async {
         try {
+          // Verify authentication
+          final authHeader = request.headers['Authorization'];
+          if (authHeader == null || !authHeader.startsWith('Bearer ')) {
+            return Response.forbidden('Missing or invalid authorization token');
+          }
+
+          final sessionToken = authHeader.substring(7);
+
           final decodedFilename = Uri.decodeComponent(filename);
           final fileModel = _sharedFiles.firstWhere(
             (f) => f.name == decodedFilename,
             orElse: () => throw Exception('File not found'),
           );
+
+          // Security check: Only allow deleting own files
+          if (fileModel.ownerId != null && fileModel.ownerId != sessionToken) {
+            return Response.forbidden(
+              'You do not have permission to delete this file',
+            );
+          }
+
+          // Also prevent deleting Host files (ownerId == null) from client
+          // The host app can delete them directly, but web clients shouldn't via API
+          if (fileModel.ownerId == null) {
+            return Response.forbidden('Cannot delete host files');
+          }
 
           if (fileModel.isUploaded) {
             final file = File(fileModel.path);
@@ -223,6 +260,17 @@ class ShelfServerDataSource {
       // POST /upload - Receive file upload with multipart form data
       router.post('/upload', (Request request) async {
         try {
+          // Verify authentication
+          final authHeader = request.headers['Authorization'];
+          if (authHeader == null || !authHeader.startsWith('Bearer ')) {
+            return Response.forbidden('Missing or invalid authorization token');
+          }
+
+          final sessionToken = authHeader.substring(7);
+          if (!_validSessions.contains(sessionToken)) {
+            return Response.forbidden('Invalid session token');
+          }
+
           // Check if it's multipart form data
           final contentType = request.headers['content-type'];
           if (contentType == null ||
@@ -298,6 +346,7 @@ class ShelfServerDataSource {
             mimeType: mimeType,
             addedAt: DateTime.now(),
             isUploaded: true,
+            ownerId: sessionToken,
           );
 
           _sharedFiles.add(fileModel);

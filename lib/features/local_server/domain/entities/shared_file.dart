@@ -14,5 +14,8 @@ class SharedFile {
     required this.mimeType,
     required this.addedAt,
     this.isUploaded = false,
+    this.ownerId,
   });
+
+  final String? ownerId;
 }
