@@ -37,11 +37,7 @@ class ShelfServerDataSource {
 
   Future<Map<String, dynamic>> startServer() async {
     try {
-      // Start background service
-      if (Platform.isAndroid) {
-        await _backgroundService.startService();
-      }
-
+      await _clearTempFiles();
       // Enable Wakelock to keep CPU/Screen awake
       // This helps in keeping the main isolate active
       try {
@@ -52,6 +48,15 @@ class ShelfServerDataSource {
 
       // Request to ignore battery optimizations & Notifications
       if (Platform.isAndroid) {
+        // Notifications (Android 13+) - Required for Foreground Service
+        // Request this FIRST before starting the service
+        final notificationStatus = await Permission.notification.request();
+        if (notificationStatus.isGranted) {
+          print('Notification permission granted');
+        } else {
+          print('Notification permission DENIED');
+        }
+
         // Battery
         final batteryStatus = await Permission.ignoreBatteryOptimizations
             .request();
@@ -61,13 +66,8 @@ class ShelfServerDataSource {
           print('Battery optimizations NOT ignored');
         }
 
-        // Notifications (Android 13+) - Required for Foreground Service
-        final notificationStatus = await Permission.notification.request();
-        if (notificationStatus.isGranted) {
-          print('Notification permission granted');
-        } else {
-          print('Notification permission DENIED');
-        }
+        // Start background service AFTER permissions are granted
+        await _backgroundService.startService();
       }
 
       // Get WiFi IP address
@@ -355,7 +355,7 @@ class ShelfServerDataSource {
           }
 
           // Save file with original filename
-          final directory = await getApplicationDocumentsDirectory();
+          final directory = await getTemporaryDirectory();
           var finalFilename = uploadedFilename;
           var finalFilePath = '${directory.path}/$finalFilename';
 
@@ -628,5 +628,25 @@ class ShelfServerDataSource {
     if (path.endsWith('.wasm')) return 'application/wasm';
     if (path.endsWith('.ico')) return 'image/x-icon';
     return 'application/octet-stream';
+  }
+
+  Future<void> _clearTempFiles() async {
+    try {
+      final directory = await getTemporaryDirectory();
+      if (await directory.exists()) {
+        print('Clearing temporary files...');
+        await for (final file in directory.list()) {
+          if (file is File) {
+            try {
+              await file.delete();
+            } catch (e) {
+              print('Error deleting file: ${file.path} - $e');
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error clearing temp files: $e');
+    }
   }
 }
