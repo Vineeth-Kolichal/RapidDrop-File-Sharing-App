@@ -213,6 +213,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ClientConnectionCard(
+                      isConnected: state.isWebSocketConnected,
                       connectionInfo: state.connectionInfo!,
                     ),
                   ),
@@ -257,7 +258,10 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 padding: const EdgeInsets.all(16),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    ClientConnectionCard(connectionInfo: state.connectionInfo!),
+                    ClientConnectionCard(
+                      isConnected: state.isWebSocketConnected,
+                      connectionInfo: state.connectionInfo!,
+                    ),
                     const SizedBox(height: 24),
                     _buildTabSwitcher(context),
                     const SizedBox(height: 24),

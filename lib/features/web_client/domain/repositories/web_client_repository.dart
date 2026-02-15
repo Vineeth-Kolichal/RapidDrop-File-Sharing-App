@@ -17,4 +17,5 @@ abstract class WebClientRepository {
   Future<Either<Failure, Unit>> deleteFile(String filename);
   Future<Either<Failure, Unit>> disconnect();
   Stream<dynamic> get notifications;
+  Stream<bool> get connectionStatus;
 }

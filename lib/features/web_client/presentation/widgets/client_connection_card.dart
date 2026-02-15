@@ -6,8 +6,13 @@ import '../bloc/client_bloc.dart';
 
 class ClientConnectionCard extends StatelessWidget {
   final ConnectionInfo connectionInfo;
+  final bool isConnected;
 
-  const ClientConnectionCard({super.key, required this.connectionInfo});
+  const ClientConnectionCard({
+    super.key,
+    required this.connectionInfo,
+    required this.isConnected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,7 @@ class ClientConnectionCard extends StatelessWidget {
                 width: 12,
                 height: 12,
                 decoration: BoxDecoration(
-                  color: connectionInfo.isConnected
+                  color: isConnected
                       ? Colors.green
                       : Theme.of(context).colorScheme.error,
                   shape: BoxShape.circle,
@@ -44,9 +49,7 @@ class ClientConnectionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    connectionInfo.isConnected
-                        ? 'Connected to'
-                        : 'Disconnected',
+                    isConnected ? 'Connected to' : 'Disconnected',
                     style: context.bodySmall(),
                   ),
                   Text(
