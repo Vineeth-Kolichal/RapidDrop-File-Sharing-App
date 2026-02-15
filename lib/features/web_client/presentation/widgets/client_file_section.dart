@@ -158,13 +158,40 @@ class _ClientFileSectionState extends State<ClientFileSection> {
                   top: Radius.circular(16),
                 ),
               ),
-              child: Center(
-                child: Icon(
-                  _getFileIcon(file.mimeType),
-                  size: 48,
-                  color: typeColor,
-                ),
-              ),
+              clipBehavior: Clip.antiAlias,
+              child:
+                  file.mimeType.startsWith('image/') && widget.serverUrl != null
+                  ? Image.network(
+                      '${widget.serverUrl}/download/${Uri.encodeComponent(file.name)}',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Icon(
+                            _getFileIcon(file.mimeType),
+                            size: 48,
+                            color: typeColor,
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Icon(
+                        _getFileIcon(file.mimeType),
+                        size: 48,
+                        color: typeColor,
+                      ),
+                    ),
             ),
           ),
           Padding(

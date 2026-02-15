@@ -87,4 +87,14 @@ class LocalServerRepositoryImpl implements LocalServerRepository {
       return files.map((file) => file as SharedFile).toList();
     });
   }
+
+  @override
+  Future<Either<Failure, Unit>> broadcastThemeChange(bool isDarkMode) async {
+    try {
+      dataSource.broadcastThemeChange(isDarkMode);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.serverFailure(e.toString()));
+    }
+  }
 }

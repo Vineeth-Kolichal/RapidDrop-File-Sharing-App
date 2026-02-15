@@ -96,6 +96,12 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               SharedPrefsServices.instance.setThemeMode(
                 newMode == ThemeMode.dark,
               );
+              // Notify server about theme change
+              // We only want to notify if we are connected
+              // ideally we should check connection status but handling in bloc is also fine
+              context.read<ClientBloc>().add(
+                ClientEvent.themeChanged(newMode == ThemeMode.dark),
+              );
             },
             icon: ValueListenableBuilder<ThemeMode>(
               valueListenable: themeNotifier,
@@ -120,6 +126,15 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(state.error!)));
+              }
+              if (state.isDarkMode != null) {
+                final newMode = state.isDarkMode!
+                    ? ThemeMode.dark
+                    : ThemeMode.light;
+                if (themeNotifier.value != newMode) {
+                  themeNotifier.value = newMode;
+                  SharedPrefsServices.instance.setThemeMode(state.isDarkMode!);
+                }
               }
             },
             builder: (context, state) {
