@@ -16,6 +16,9 @@ class WebClientRepositoryImpl implements WebClientRepository {
   WebClientRepositoryImpl(this.dataSource);
 
   @override
+  Stream<void> get notifications => dataSource.notifications;
+
+  @override
   Future<Either<Failure, ConnectionInfo>> connectToServer(
     String ip,
     int port,
@@ -77,9 +80,12 @@ class WebClientRepositoryImpl implements WebClientRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> uploadFile(FileEntity file) async {
+  Future<Either<Failure, Unit>> uploadFile(
+    FileEntity file, {
+    void Function(int, int)? onSendProgress,
+  }) async {
     try {
-      await dataSource.uploadFile(file);
+      await dataSource.uploadFile(file, onSendProgress: onSendProgress);
       return const Right(unit);
     } catch (e) {
       return Left(Failure.fileFailure('Failed to upload file: $e'));

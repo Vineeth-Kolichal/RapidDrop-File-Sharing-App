@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,51 +28,80 @@ class Loading extends StatelessWidget {
     super.key,
     required this.child,
     required this.isLoading,
+    this.progress,
+    this.message,
   });
   final Widget child;
   final bool isLoading;
+  final double? progress;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
     AppColors? appColors = context.appColors;
+    if (!isLoading) {
+      return child;
+    }
 
     return Stack(
       children: [
         child,
-        if (isLoading)
-          Container(
-            color: appColors?.kBlack.withOpacity(0.3),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                height: 70,
-                decoration: BoxDecoration(
-                  color: appColors?.surfaceColor,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Platform.isIOS
-                        ? const CupertinoActivityIndicator(
-                            radius: 15,
-                          )
-                        : const CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                    15.horizontalSpace,
-                    Text(
-                      "Please Wait...",
-                      style: context.labelLarge(),
-                    )
+        Container(
+          color: appColors?.kBlack.withValues(alpha: 0.3),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              height: 70,
+              decoration: BoxDecoration(
+                color: appColors?.surfaceColor,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (progress != null) ...[
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 3,
+                        color: appColors?.primary,
+                      ),
+                    ),
+                  ] else ...[
+                    Theme.of(context).platform == TargetPlatform.iOS
+                        ? const CupertinoActivityIndicator(radius: 15)
+                        : const CircularProgressIndicator(strokeWidth: 2),
                   ],
-                ),
+                  15.horizontalSpace,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          message ?? "Please Wait...",
+                          style: context.labelLarge(),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (progress != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            "${(progress! * 100).toStringAsFixed(0)}%",
+                            style: context.bodySmall(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
+        ),
       ],
     );
   }
 }
-
-

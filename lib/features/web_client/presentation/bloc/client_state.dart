@@ -7,6 +7,7 @@ sealed class ClientState with _$ClientState {
     String? error,
     ConnectionInfo? connectionInfo,
     List<RemoteFile>? fileList,
+    double? uploadProgress,
   }) = _ClientState;
 
   factory ClientState.initial() => const ClientState(isLoading: false);

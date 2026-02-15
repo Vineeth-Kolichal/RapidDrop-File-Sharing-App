@@ -55,7 +55,7 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Connect value)?  connect,TResult Function( ValidatePin value)?  validatePin,TResult Function( Disconnect value)?  disconnect,TResult Function( FetchFiles value)?  fetchFiles,TResult Function( UploadFile value)?  uploadFile,TResult Function( DeleteFile value)?  deleteFile,TResult Function( StartAutoRefresh value)?  startAutoRefresh,TResult Function( StopAutoRefresh value)?  stopAutoRefresh,TResult Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult Function( _NotificationReceived value)?  notificationReceived,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -66,7 +66,9 @@ return fetchFiles(_that);case UploadFile() when uploadFile != null:
 return uploadFile(_that);case DeleteFile() when deleteFile != null:
 return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _UpdateUploadProgress() when updateUploadProgress != null:
+return updateUploadProgress(_that);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived(_that);case _:
   return orElse();
 
 }
@@ -84,7 +86,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Connect value)  connect,required TResult Function( ValidatePin value)  validatePin,required TResult Function( Disconnect value)  disconnect,required TResult Function( FetchFiles value)  fetchFiles,required TResult Function( UploadFile value)  uploadFile,required TResult Function( DeleteFile value)  deleteFile,required TResult Function( StartAutoRefresh value)  startAutoRefresh,required TResult Function( StopAutoRefresh value)  stopAutoRefresh,required TResult Function( _UpdateUploadProgress value)  updateUploadProgress,required TResult Function( _NotificationReceived value)  notificationReceived,}){
 final _that = this;
 switch (_that) {
 case Connect():
@@ -95,7 +97,9 @@ return fetchFiles(_that);case UploadFile():
 return uploadFile(_that);case DeleteFile():
 return deleteFile(_that);case StartAutoRefresh():
 return startAutoRefresh(_that);case StopAutoRefresh():
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _UpdateUploadProgress():
+return updateUploadProgress(_that);case _NotificationReceived():
+return notificationReceived(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -112,7 +116,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Connect value)?  connect,TResult? Function( ValidatePin value)?  validatePin,TResult? Function( Disconnect value)?  disconnect,TResult? Function( FetchFiles value)?  fetchFiles,TResult? Function( UploadFile value)?  uploadFile,TResult? Function( DeleteFile value)?  deleteFile,TResult? Function( StartAutoRefresh value)?  startAutoRefresh,TResult? Function( StopAutoRefresh value)?  stopAutoRefresh,TResult? Function( _UpdateUploadProgress value)?  updateUploadProgress,TResult? Function( _NotificationReceived value)?  notificationReceived,}){
 final _that = this;
 switch (_that) {
 case Connect() when connect != null:
@@ -123,7 +127,9 @@ return fetchFiles(_that);case UploadFile() when uploadFile != null:
 return uploadFile(_that);case DeleteFile() when deleteFile != null:
 return deleteFile(_that);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh(_that);case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh(_that);case _:
+return stopAutoRefresh(_that);case _UpdateUploadProgress() when updateUploadProgress != null:
+return updateUploadProgress(_that);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived(_that);case _:
   return null;
 
 }
@@ -140,7 +146,7 @@ return stopAutoRefresh(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String ip,  int port)?  connect,TResult Function( String pin)?  validatePin,TResult Function()?  disconnect,TResult Function( bool silent)?  fetchFiles,TResult Function( FileEntity file)?  uploadFile,TResult Function( String filename)?  deleteFile,TResult Function()?  startAutoRefresh,TResult Function()?  stopAutoRefresh,TResult Function( double progress)?  updateUploadProgress,TResult Function()?  notificationReceived,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -150,7 +156,9 @@ return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
 return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
 return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _UpdateUploadProgress() when updateUploadProgress != null:
+return updateUploadProgress(_that.progress);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived();case _:
   return orElse();
 
 }
@@ -168,7 +176,7 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String ip,  int port)  connect,required TResult Function( String pin)  validatePin,required TResult Function()  disconnect,required TResult Function( bool silent)  fetchFiles,required TResult Function( FileEntity file)  uploadFile,required TResult Function( String filename)  deleteFile,required TResult Function()  startAutoRefresh,required TResult Function()  stopAutoRefresh,required TResult Function( double progress)  updateUploadProgress,required TResult Function()  notificationReceived,}) {final _that = this;
 switch (_that) {
 case Connect():
 return connect(_that.ip,_that.port);case ValidatePin():
@@ -178,7 +186,9 @@ return fetchFiles(_that.silent);case UploadFile():
 return uploadFile(_that.file);case DeleteFile():
 return deleteFile(_that.filename);case StartAutoRefresh():
 return startAutoRefresh();case StopAutoRefresh():
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _UpdateUploadProgress():
+return updateUploadProgress(_that.progress);case _NotificationReceived():
+return notificationReceived();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,7 +205,7 @@ return stopAutoRefresh();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String ip,  int port)?  connect,TResult? Function( String pin)?  validatePin,TResult? Function()?  disconnect,TResult? Function( bool silent)?  fetchFiles,TResult? Function( FileEntity file)?  uploadFile,TResult? Function( String filename)?  deleteFile,TResult? Function()?  startAutoRefresh,TResult? Function()?  stopAutoRefresh,TResult? Function( double progress)?  updateUploadProgress,TResult? Function()?  notificationReceived,}) {final _that = this;
 switch (_that) {
 case Connect() when connect != null:
 return connect(_that.ip,_that.port);case ValidatePin() when validatePin != null:
@@ -205,7 +215,9 @@ return fetchFiles(_that.silent);case UploadFile() when uploadFile != null:
 return uploadFile(_that.file);case DeleteFile() when deleteFile != null:
 return deleteFile(_that.filename);case StartAutoRefresh() when startAutoRefresh != null:
 return startAutoRefresh();case StopAutoRefresh() when stopAutoRefresh != null:
-return stopAutoRefresh();case _:
+return stopAutoRefresh();case _UpdateUploadProgress() when updateUploadProgress != null:
+return updateUploadProgress(_that.progress);case _NotificationReceived() when notificationReceived != null:
+return notificationReceived();case _:
   return null;
 
 }
@@ -642,9 +654,107 @@ String toString() {
 
 
 /// @nodoc
+
+
+class _UpdateUploadProgress implements ClientEvent {
+  const _UpdateUploadProgress(this.progress);
+  
+
+ final  double progress;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateUploadProgressCopyWith<_UpdateUploadProgress> get copyWith => __$UpdateUploadProgressCopyWithImpl<_UpdateUploadProgress>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateUploadProgress&&(identical(other.progress, progress) || other.progress == progress));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,progress);
+
+@override
+String toString() {
+  return 'ClientEvent.updateUploadProgress(progress: $progress)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateUploadProgressCopyWith<$Res> implements $ClientEventCopyWith<$Res> {
+  factory _$UpdateUploadProgressCopyWith(_UpdateUploadProgress value, $Res Function(_UpdateUploadProgress) _then) = __$UpdateUploadProgressCopyWithImpl;
+@useResult
+$Res call({
+ double progress
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateUploadProgressCopyWithImpl<$Res>
+    implements _$UpdateUploadProgressCopyWith<$Res> {
+  __$UpdateUploadProgressCopyWithImpl(this._self, this._then);
+
+  final _UpdateUploadProgress _self;
+  final $Res Function(_UpdateUploadProgress) _then;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? progress = null,}) {
+  return _then(_UpdateUploadProgress(
+null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _NotificationReceived implements ClientEvent {
+  const _NotificationReceived();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotificationReceived);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ClientEvent.notificationReceived()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$ClientState {
 
- bool get isLoading; String? get error; ConnectionInfo? get connectionInfo; List<RemoteFile>? get fileList;
+ bool get isLoading; String? get error; ConnectionInfo? get connectionInfo; List<RemoteFile>? get fileList; double? get uploadProgress;
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -655,16 +765,16 @@ $ClientStateCopyWith<ClientState> get copyWith => _$ClientStateCopyWithImpl<Clie
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other.fileList, fileList));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other.fileList, fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(fileList));
+int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(fileList),uploadProgress);
 
 @override
 String toString() {
-  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList)';
+  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress)';
 }
 
 
@@ -675,7 +785,7 @@ abstract mixin class $ClientStateCopyWith<$Res>  {
   factory $ClientStateCopyWith(ClientState value, $Res Function(ClientState) _then) = _$ClientStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList
+ bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress
 });
 
 
@@ -692,13 +802,14 @@ class _$ClientStateCopyWithImpl<$Res>
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,connectionInfo: freezed == connectionInfo ? _self.connectionInfo : connectionInfo // ignore: cast_nullable_to_non_nullable
 as ConnectionInfo?,fileList: freezed == fileList ? _self.fileList : fileList // ignore: cast_nullable_to_non_nullable
-as List<RemoteFile>?,
+as List<RemoteFile>?,uploadProgress: freezed == uploadProgress ? _self.uploadProgress : uploadProgress // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -780,10 +891,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClientState() when $default != null:
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList);case _:
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress);case _:
   return orElse();
 
 }
@@ -801,10 +912,10 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress)  $default,) {final _that = this;
 switch (_that) {
 case _ClientState():
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList);}
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -818,10 +929,10 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  String? error,  ConnectionInfo? connectionInfo,  List<RemoteFile>? fileList,  double? uploadProgress)?  $default,) {final _that = this;
 switch (_that) {
 case _ClientState() when $default != null:
-return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList);case _:
+return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList,_that.uploadProgress);case _:
   return null;
 
 }
@@ -833,7 +944,7 @@ return $default(_that.isLoading,_that.error,_that.connectionInfo,_that.fileList)
 
 
 class _ClientState implements ClientState {
-  const _ClientState({required this.isLoading, this.error, this.connectionInfo, final  List<RemoteFile>? fileList}): _fileList = fileList;
+  const _ClientState({required this.isLoading, this.error, this.connectionInfo, final  List<RemoteFile>? fileList, this.uploadProgress}): _fileList = fileList;
   
 
 @override final  bool isLoading;
@@ -848,6 +959,7 @@ class _ClientState implements ClientState {
   return EqualUnmodifiableListView(value);
 }
 
+@override final  double? uploadProgress;
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
@@ -859,16 +971,16 @@ _$ClientStateCopyWith<_ClientState> get copyWith => __$ClientStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other._fileList, _fileList));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClientState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.connectionInfo, connectionInfo) || other.connectionInfo == connectionInfo)&&const DeepCollectionEquality().equals(other._fileList, _fileList)&&(identical(other.uploadProgress, uploadProgress) || other.uploadProgress == uploadProgress));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(_fileList));
+int get hashCode => Object.hash(runtimeType,isLoading,error,connectionInfo,const DeepCollectionEquality().hash(_fileList),uploadProgress);
 
 @override
 String toString() {
-  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList)';
+  return 'ClientState(isLoading: $isLoading, error: $error, connectionInfo: $connectionInfo, fileList: $fileList, uploadProgress: $uploadProgress)';
 }
 
 
@@ -879,7 +991,7 @@ abstract mixin class _$ClientStateCopyWith<$Res> implements $ClientStateCopyWith
   factory _$ClientStateCopyWith(_ClientState value, $Res Function(_ClientState) _then) = __$ClientStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList
+ bool isLoading, String? error, ConnectionInfo? connectionInfo, List<RemoteFile>? fileList, double? uploadProgress
 });
 
 
@@ -896,13 +1008,14 @@ class __$ClientStateCopyWithImpl<$Res>
 
 /// Create a copy of ClientState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? error = freezed,Object? connectionInfo = freezed,Object? fileList = freezed,Object? uploadProgress = freezed,}) {
   return _then(_ClientState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,connectionInfo: freezed == connectionInfo ? _self.connectionInfo : connectionInfo // ignore: cast_nullable_to_non_nullable
 as ConnectionInfo?,fileList: freezed == fileList ? _self._fileList : fileList // ignore: cast_nullable_to_non_nullable
-as List<RemoteFile>?,
+as List<RemoteFile>?,uploadProgress: freezed == uploadProgress ? _self.uploadProgress : uploadProgress // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

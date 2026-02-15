@@ -8,9 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime/mime.dart';
-import 'package:shelf_multipart/shelf_multipart.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/shared_file_model.dart';
+import 'package:shelf_web_socket/shelf_web_socket.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 @LazySingleton()
 @injectable
@@ -20,6 +21,7 @@ class ShelfServerDataSource {
   String? _ipAddress;
   String? _pin; // 4-digit PIN for authentication
   final Set<String> _validSessions = {}; // Active session tokens
+  final List<WebSocketChannel> _clients = []; // Connected WebSocket clients
   static const int _port = 8080;
 
   final _filesController = StreamController<List<SharedFileModel>>.broadcast();
@@ -48,6 +50,33 @@ class ShelfServerDataSource {
       // Serve embedded web UI - Root path
       router.get('/', (Request request) => _serveWebAsset('index.html'));
 
+      // WebSocket endpoint
+      router.get(
+        '/ws',
+        webSocketHandler((WebSocketChannel channel, String? protocol) {
+          _clients.add(channel);
+          print(
+            'WebSocket client connected. Total clients: ${_clients.length}',
+          );
+
+          channel.stream.listen(
+            (message) {
+              print('Received WS message: $message');
+            },
+            onDone: () {
+              _clients.remove(channel);
+              print(
+                'WebSocket client disconnected. Total clients: ${_clients.length}',
+              );
+            },
+            onError: (error) {
+              _clients.remove(channel);
+              print('WebSocket error: $error');
+            },
+          );
+        }),
+      );
+
       // API: POST /api/validate-pin - Validate PIN and issue session token
       router.post('/api/validate-pin', (Request request) async {
         try {
@@ -73,6 +102,7 @@ class ShelfServerDataSource {
                 'success': true,
                 'sessionToken': sessionToken,
                 'message': 'PIN validated successfully',
+                'wsUrl': 'ws://$_ipAddress:$_port/ws',
               }),
               headers: {'Content-Type': 'application/json'},
             );
@@ -168,6 +198,7 @@ class ShelfServerDataSource {
 
           _sharedFiles.remove(fileModel);
           _filesController.add(List.from(_sharedFiles));
+          _notifyClients();
 
           return Response.ok(
             json.encode({'success': true, 'message': 'File deleted'}),
@@ -262,6 +293,7 @@ class ShelfServerDataSource {
 
           _sharedFiles.add(fileModel);
           _filesController.add(List.from(_sharedFiles));
+          _notifyClients();
           print(
             'File uploaded successfully: $finalFilename (${(fileBytes.length / 1024 / 1024).toStringAsFixed(2)} MB)',
           );
@@ -319,7 +351,13 @@ class ShelfServerDataSource {
     await _server?.close(force: true);
     _server = null;
     _pin = null;
+    _server = null;
+    _pin = null;
     _validSessions.clear();
+    for (final client in _clients) {
+      client.sink.close();
+    }
+    _clients.clear();
   }
 
   Map<String, dynamic> getServerInfo() {
@@ -367,6 +405,7 @@ class ShelfServerDataSource {
 
       _sharedFiles.add(fileModel);
       _filesController.add(List.from(_sharedFiles));
+      _notifyClients();
       print('Successfully added file to shared list');
     } catch (e, stackTrace) {
       print('Error adding file: $e');
@@ -390,6 +429,14 @@ class ShelfServerDataSource {
 
     _sharedFiles.remove(fileModel);
     _filesController.add(List.from(_sharedFiles));
+    _notifyClients();
+  }
+
+  void _notifyClients() {
+    print('Notifying ${_clients.length} clients of update');
+    for (final client in _clients) {
+      client.sink.add(json.encode({'type': 'refresh'}));
+    }
   }
 
   // CORS middleware

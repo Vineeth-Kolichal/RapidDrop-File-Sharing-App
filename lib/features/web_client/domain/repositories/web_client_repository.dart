@@ -10,7 +10,11 @@ abstract class WebClientRepository {
   Future<Either<Failure, ConnectionInfo>> validatePin(String pin);
   Future<Either<Failure, List<RemoteFile>>> getFileList();
   Future<Either<Failure, Unit>> downloadFile(String filename, String savePath);
-  Future<Either<Failure, Unit>> uploadFile(FileEntity file);
+  Future<Either<Failure, Unit>> uploadFile(
+    FileEntity file, {
+    void Function(int, int)? onSendProgress,
+  });
   Future<Either<Failure, Unit>> deleteFile(String filename);
   Future<Either<Failure, Unit>> disconnect();
+  Stream<void> get notifications;
 }

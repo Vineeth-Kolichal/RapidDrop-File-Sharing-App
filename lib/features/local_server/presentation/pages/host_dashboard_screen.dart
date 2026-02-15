@@ -1,12 +1,16 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:file_sharing/core/extensions/theme_ext.dart';
-import '../../domain/entities/shared_file.dart';
+import 'package:file_sharing/core/services/sharedprefs_services.dart';
+import 'package:file_sharing/core/theme/theme_notifier.dart';
 import '../bloc/server_bloc.dart';
+import '../widgets/server_idle_view.dart';
+import '../widgets/connection_details_card.dart';
+import '../widgets/server_stats_row.dart';
+import '../widgets/file_section.dart';
+
+ValueNotifier<bool> isSharedByMe = ValueNotifier<bool>(true);
 
 class HostDashboardScreen extends StatefulWidget {
   const HostDashboardScreen({super.key});
@@ -16,11 +20,7 @@ class HostDashboardScreen extends StatefulWidget {
 }
 
 class _HostDashboardScreenState extends State<HostDashboardScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Server will be started manually via button
-  }
+  final ValueNotifier<bool> isSharedByMe = ValueNotifier(true); // Moved here
 
   Future<void> _pickAndAddFile() async {
     try {
@@ -29,13 +29,9 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
         type: FileType.any,
       );
 
-      if (result == null) {
-        // User cancelled the picker
-        return;
-      }
+      if (result == null) return;
 
       if (result.files.single.path == null) {
-        // Path is null - this can happen on some platforms
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -52,7 +48,6 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
       final filePath = result.files.single.path!;
       final fileSize = result.files.single.size;
 
-      // Log file info for debugging
       debugPrint('Selected file: $filePath');
       debugPrint(
         'File size: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
@@ -94,21 +89,26 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
           ],
         ),
         actions: [
-          BlocBuilder<ServerBloc, ServerState>(
-            builder: (context, state) {
-              final serverInfo = state.serverInfo;
-              if (serverInfo != null && serverInfo.isRunning) {
-                return IconButton(
-                  icon: const Icon(Icons.stop),
-                  tooltip: 'Stop Server',
-                  onPressed: () {
-                    context.read<ServerBloc>().add(
-                      const ServerEvent.stopServer(),
-                    );
-                  },
-                );
-              }
-              return const SizedBox.shrink();
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: themeNotifier,
+            builder: (context, themeMode, _) {
+              return IconButton(
+                icon: Icon(
+                  themeMode == ThemeMode.dark
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                ),
+                tooltip: 'Toggle Theme',
+                onPressed: () {
+                  final newMode = themeMode == ThemeMode.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
+                  themeNotifier.value = newMode;
+                  SharedPrefsServices.instance.setThemeMode(
+                    newMode == ThemeMode.dark,
+                  );
+                },
+              );
             },
           ),
         ],
@@ -152,358 +152,249 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
 
           final serverInfo = state.serverInfo;
           if (serverInfo == null || !serverInfo.isRunning) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.cloud_off, size: 64, color: appColors?.primary),
-                  const SizedBox(height: 24),
-                  Text('Server is not running', style: context.titleLarge()),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start the server to share files',
-                    style: context.bodyMedium(),
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: state.isLoading
-                        ? null
-                        : () {
-                            context.read<ServerBloc>().add(
-                              const ServerEvent.startServer(),
-                            );
-                          },
-                    icon: state.isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.play_arrow),
-                    label: Text(
-                      state.isLoading ? 'Starting...' : 'Start Server',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return const ServerIdleView();
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Connection Card with QR Code
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Connection Details',
-                          style: context.titleMedium(),
-                        ),
-                        const SizedBox(height: 16),
-                        // PIN Display
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: appColors?.primary,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Access PIN',
-                                style: context.bodySmall()?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    serverInfo.pin,
-                                    style: const TextStyle(
-                                      fontSize: 48,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 8,
-                                      fontFamily: 'monospace',
-                                      color: Colors.white,
-                                    ),
+          return Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          ConnectionDetailsCard(serverInfo: serverInfo),
+                          const SizedBox(height: 16),
+                          ServerStatsRow(serverInfo: serverInfo),
+                          const SizedBox(height: 16),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: isSharedByMe,
+                            builder: (context, isShared, _) {
+                              return Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: context.appColors?.surfaceColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color:
+                                        context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.1) ??
+                                        Colors.grey,
                                   ),
-                                  const SizedBox(width: 16),
-                                  IconButton(
-                                    onPressed: () {
-                                      // Copy PIN to clipboard
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'PIN copied to clipboard',
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => isSharedByMe.value = true,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
                                           ),
-                                          duration: Duration(seconds: 2),
+                                          decoration: BoxDecoration(
+                                            color: isShared
+                                                ? context.appColors?.primary
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Shared by me',
+                                            textAlign: TextAlign.center,
+                                            style: isShared
+                                                ? context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      )
+                                                : context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: context
+                                                            .appColors
+                                                            ?.onSurface
+                                                            ?.withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                      ),
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    icon: const Icon(
-                                      Icons.copy,
-                                      color: Colors.white,
+                                      ),
                                     ),
-                                    tooltip: 'Copy PIN',
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => isSharedByMe.value = false,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: !isShared
+                                                ? context.appColors?.primary
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Shared to me',
+                                            textAlign: TextAlign.center,
+                                            style: !isShared
+                                                ? context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      )
+                                                : context
+                                                      .bodyMedium()
+                                                      ?.copyWith(
+                                                        color: context
+                                                            .appColors
+                                                            ?.onSurface
+                                                            ?.withValues(
+                                                              alpha: 0.6,
+                                                            ),
+                                                      ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        if (serverInfo.ipAddress != null)
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: QrImageView(
-                              data: serverInfo.serverUrl,
-                              version: QrVersions.auto,
-                              size: 200.0,
-                            ),
-                          ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: appColors?.primary?.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.link, color: appColors?.primary),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  serverInfo.serverUrl,
-                                  style: context.bodyMedium()?.copyWith(
-                                    fontFamily: 'monospace',
-                                  ),
+                          const SizedBox(height: 16),
+                        ]),
+                      ),
+                    ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: isSharedByMe,
+                      builder: (context, isShared, _) {
+                        final sentFiles = serverInfo.sharedFiles
+                            .where((f) => !f.isUploaded)
+                            .toList();
+                        final receivedFiles = serverInfo.sharedFiles
+                            .where((f) => f.isUploaded)
+                            .toList();
+
+                        if (isShared) {
+                          if (sentFiles.isEmpty) {
+                            return SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.folder_open_outlined,
+                                      size: 64,
+                                      color: context.appColors?.onSurface
+                                          ?.withValues(alpha: 0.2),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No files shared yet',
+                                      style: context.bodyMedium()?.copyWith(
+                                        color: context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          }
+                          return FileSection(
+                            title: 'Shared from App',
+                            files: sentFiles,
+                          );
+                        } else {
+                          if (receivedFiles.isEmpty) {
+                            return SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.move_to_inbox_outlined,
+                                      size: 64,
+                                      color: context.appColors?.onSurface
+                                          ?.withValues(alpha: 0.2),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No files received yet',
+                                      style: context.bodyMedium()?.copyWith(
+                                        color: context.appColors?.onSurface
+                                            ?.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return FileSection(
+                            title: 'Received from Web',
+                            files: receivedFiles,
+                          );
+                        }
+                      },
+                    ),
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+                  ],
+                ),
+              ),
+              ValueListenableBuilder<bool>(
+                valueListenable: isSharedByMe,
+                builder: (context, isShared, _) {
+                  if (!isShared) return const SizedBox.shrink();
+
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.appColors?.surfaceColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, -5),
                         ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Stats
-                Row(
-                  children: [
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Text('Total Files', style: context.bodySmall()),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${serverInfo.sharedFiles.length}',
-                                style: context.headlineMedium(),
-                              ),
-                            ],
+                    child: SafeArea(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _pickAndAddFile,
+                          icon: const Icon(Icons.cloud_upload),
+                          label: const Text('Select Files to Share'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.appColors?.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Text('Port', style: context.bodySmall()),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${serverInfo.port}',
-                                style: context.headlineMedium(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Files List
-                if (serverInfo.sharedFiles.isNotEmpty) ...[
-                  // Files from App
-                  _buildFileSection(
-                    context,
-                    'Shared from App',
-                    serverInfo.sharedFiles.where((f) => !f.isUploaded).toList(),
-                    appColors,
-                  ),
-
-                  // Files from Web
-                  _buildFileSection(
-                    context,
-                    'Received from Web',
-                    serverInfo.sharedFiles.where((f) => f.isUploaded).toList(),
-                    appColors,
-                  ),
-                ] else
-                  Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Text(
-                      'No files shared yet',
-                      style: context.bodyMedium(),
-                    ),
-                  ),
-              ],
-            ),
+                  );
+                },
+              ),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _pickAndAddFile,
-        icon: const Icon(Icons.add),
-        label: const Text('Add Files'),
-      ),
     );
-  }
-
-  Future<void> _saveToDownloads(SharedFile file) async {
-    try {
-      final sourceFile = File(file.path);
-      if (!await sourceFile.exists()) {
-        throw Exception('Source file not found');
-      }
-
-      String? downloadPath;
-      if (Platform.isAndroid) {
-        downloadPath = '/storage/emulated/0/Download';
-      } else {
-        final directory = await getDownloadsDirectory();
-        downloadPath = directory?.path;
-      }
-
-      if (downloadPath == null) {
-        throw Exception('Could not determine downloads directory');
-      }
-
-      final targetPath = '$downloadPath/${file.name}';
-
-      // Check if file already exists to avoid overwrite (optional, simple logic for now)
-      // For now, we overwrite or it might fail if we don't have permission.
-
-      await sourceFile.copy(targetPath);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Saved to Downloads: ${file.name}'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save file: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Widget _buildFileSection(
-    BuildContext context,
-    String title,
-    List<dynamic> files,
-    dynamic appColors,
-  ) {
-    if (files.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title, style: context.titleMedium()),
-            Text('${files.length} files', style: context.bodySmall()),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            final SharedFile file = files[index];
-            final isUploaded = file.isUploaded;
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: Icon(
-                  _getFileIcon(file.mimeType),
-                  color: appColors?.primary,
-                ),
-                title: Text(file.name),
-                subtitle: Text(
-                  '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB',
-                ),
-                trailing: isUploaded
-                    ? IconButton(
-                        icon: const Icon(Icons.download),
-                        tooltip: 'Save to Downloads',
-                        onPressed: () => _saveToDownloads(file),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.delete),
-                        tooltip: 'Stop Sharing',
-                        onPressed: () {
-                          context.read<ServerBloc>().add(
-                            ServerEvent.removeFile(file.name),
-                          );
-                        },
-                      ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  IconData _getFileIcon(String mimeType) {
-    if (mimeType.startsWith('image/')) return Icons.image;
-    if (mimeType.startsWith('video/')) return Icons.video_file;
-    if (mimeType.startsWith('audio/')) return Icons.audio_file;
-    if (mimeType.contains('pdf')) return Icons.picture_as_pdf;
-    if (mimeType.contains('zip') || mimeType.contains('archive')) {
-      return Icons.folder_zip;
-    }
-    return Icons.insert_drive_file;
   }
 }

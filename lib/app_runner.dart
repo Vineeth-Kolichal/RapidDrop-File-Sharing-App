@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:file_sharing/core/services/sharedprefs_services.dart';
+import 'package:file_sharing/core/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +12,7 @@ import 'core/dependency_injection/config/configure_injection.dart';
 Future<void> runApplication(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   FlavorConfig.initialize(flavor);
+  await SharedPrefsServices.instance.initialize();
 
   if (!kIsWeb) {
     try {
@@ -24,6 +27,15 @@ Future<void> runApplication(Flavor flavor) async {
     }
   }
 
+  _loadTheme();
+
   await configureInjection();
   runApp(MyApp());
+}
+
+Future<void> _loadTheme() async {
+  final isDark = SharedPrefsServices.instance.getThemeMode();
+  if (isDark != null) {
+    themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
 }

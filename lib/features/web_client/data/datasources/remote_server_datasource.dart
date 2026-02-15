@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:file_sharing/core/api_endpoints/api_endpoints.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../domain/entities/file_entity.dart';
 import '../models/remote_file_model.dart';
 
@@ -9,6 +11,9 @@ import '../models/remote_file_model.dart';
 class RemoteServerDataSource {
   final Dio _dio;
   String? _baseUrl;
+  WebSocketChannel? _channel;
+  final _notificationsController = StreamController<void>.broadcast();
+  Stream<void> get notifications => _notificationsController.stream;
 
   RemoteServerDataSource(this._dio);
 
@@ -28,10 +33,46 @@ class RemoteServerDataSource {
       // Store session token for future requests
       _dio.options.headers['Authorization'] = 'Bearer $sessionToken';
 
+      // Connect to WebSocket
+      final wsUrl = response.data['wsUrl'] as String?;
+      await connectWebSocket(pin: pin, url: wsUrl);
+
       return sessionToken;
     } catch (e) {
       _baseUrl = null;
       rethrow;
+    }
+  }
+
+  Future<void> connectWebSocket({String? pin, String? url}) async {
+    try {
+      Uri wsUri;
+      if (url != null && url.isNotEmpty) {
+        wsUri = Uri.parse(url);
+      } else if (_baseUrl != null && _baseUrl!.isNotEmpty) {
+        final uri = Uri.parse(_baseUrl!);
+        wsUri = uri.replace(scheme: 'ws', path: '/ws');
+      } else {
+        print('WebSocket URL could not be determined');
+        return;
+      }
+
+      print('Connecting to WebSocket: $wsUri');
+      _channel = WebSocketChannel.connect(wsUri);
+
+      _channel!.stream.listen(
+        (message) {
+          print('WS Message: $message');
+          if (message != null) {
+            // For now, any message triggers a refresh
+            _notificationsController.add(null);
+          }
+        },
+        onError: (e) => print('WS Error: $e'),
+        onDone: () => print('WS Disconnected'),
+      );
+    } catch (e) {
+      print('WebSocket connection failed: $e');
     }
   }
 
@@ -79,7 +120,10 @@ class RemoteServerDataSource {
     }
   }
 
-  Future<void> uploadFile(FileEntity file) async {
+  Future<void> uploadFile(
+    FileEntity file, {
+    void Function(int, int)? onSendProgress,
+  }) async {
     if (_baseUrl == null) {
       throw Exception('Not connected to any server');
     }
@@ -107,7 +151,11 @@ class RemoteServerDataSource {
         throw Exception('No file data provided');
       }
 
-      await _dio.post('$_baseUrl${ApiEndpoints.upload}', data: formData);
+      await _dio.post(
+        '$_baseUrl${ApiEndpoints.upload}',
+        data: formData,
+        onSendProgress: onSendProgress,
+      );
     } catch (e) {
       rethrow;
     }
@@ -128,6 +176,8 @@ class RemoteServerDataSource {
 
   void disconnect() {
     _baseUrl = null;
+    _channel?.sink.close();
+    _channel = null;
   }
 
   bool get isConnected => _baseUrl != null;

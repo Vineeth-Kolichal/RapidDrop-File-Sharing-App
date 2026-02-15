@@ -35,7 +35,7 @@ class AppTheme {
     secondary: Color(0xFF1DE9B6),
     surfaceColor: Color(0xFF101622), // background-dark from sample
     onSurface: Color(0xFFFFFFFF),
-    appBarColor: Color(0xFF1F1F1F),
+    appBarColor: Color(0xFF010023),
   );
 
   //Dark ColorScheme
