@@ -41,7 +41,7 @@ class ShelfServerDataSource {
       // Enable Wakelock to keep CPU/Screen awake
       // This helps in keeping the main isolate active
       try {
-        WakelockPlus.enable();
+        await WakelockPlus.enable();
       } catch (e) {
         print('Failed to enable wakelock in Datasource: $e');
       }

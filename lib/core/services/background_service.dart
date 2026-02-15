@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 @lazySingleton
 class AppBackgroundService {
@@ -103,6 +102,9 @@ void onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   // For flutter prior to 3.0.0
   // We have to register the plugin manually
 
@@ -115,12 +117,29 @@ void onStart(ServiceInstance service) async {
       service.setAsBackgroundService();
     });
 
-    service.on('updateNotification').listen((event) {
+    service.on('updateNotification').listen((event) async {
       if (event != null) {
         final ip = event['ip'];
         final port = event['port'];
         final pin = event['pin'];
 
+        // Use flutter_local_notifications to update with ongoing: true
+        await flutterLocalNotificationsPlugin.show(
+          id: 888,
+          title: "RapidDrop Server Active",
+          body: "IP: $ip:$port | PIN: $pin",
+          notificationDetails: const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'file_sharing_server_v2',
+              'File Sharing Server',
+              icon: 'ic_bg_service_small',
+              ongoing: true,
+              autoCancel: false,
+            ),
+          ),
+        );
+
+        // Also update service info to keep internal state consistent
         service.setForegroundNotificationInfo(
           title: "RapidDrop Server Active",
           content: "IP: $ip:$port | PIN: $pin",
@@ -133,13 +152,8 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
 
-  // Enable wakelock to keep the device awake
-  // This is crucial for maintaining network connections in background
-  try {
-    WakelockPlus.enable();
-  } catch (e) {
-    print('Failed to enable wakelock: $e');
-  }
+  // No need to call WakelockPlus.enable() here.
+  // The Foreground Service notification keeps the process alive.
 
   // bring to foreground
   Timer.periodic(const Duration(seconds: 1), (timer) async {
