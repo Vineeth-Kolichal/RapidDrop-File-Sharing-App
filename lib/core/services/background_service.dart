@@ -14,11 +14,11 @@ class AppBackgroundService {
 
     /// OPTIONAL, using custom notification channel id
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'file_sharing_server', // id
+      'file_sharing_server_v2', // id
       'File Sharing Server', // title
       description:
           'This channel is used for persistent notifications.', // description
-      importance: Importance.low, // importance must be at low or higher level
+      importance: Importance.high, // importance must be at low or higher level
     );
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -48,7 +48,7 @@ class AppBackgroundService {
         autoStart: false,
         isForegroundMode: true,
 
-        notificationChannelId: 'file_sharing_server',
+        notificationChannelId: 'file_sharing_server_v2',
         initialNotificationTitle: 'RapidDrop Server',
         initialNotificationContent: 'Server is running in background',
         foregroundServiceNotificationId: 888,
@@ -80,6 +80,21 @@ class AppBackgroundService {
       service.invoke("stopService");
     }
   }
+
+  Future<void> updateNotification({
+    required String ip,
+    required int port,
+    required String pin,
+  }) async {
+    final service = FlutterBackgroundService();
+    if (await service.isRunning()) {
+      service.invoke("updateNotification", {
+        "ip": ip,
+        "port": port,
+        "pin": pin,
+      });
+    }
+  }
 }
 
 // this will be used as notification icon for android
@@ -98,6 +113,19 @@ void onStart(ServiceInstance service) async {
 
     service.on('setAsBackground').listen((event) {
       service.setAsBackgroundService();
+    });
+
+    service.on('updateNotification').listen((event) {
+      if (event != null) {
+        final ip = event['ip'];
+        final port = event['port'];
+        final pin = event['pin'];
+
+        service.setForegroundNotificationInfo(
+          title: "RapidDrop Server Active",
+          content: "IP: $ip:$port | PIN: $pin",
+        );
+      }
     });
   }
 

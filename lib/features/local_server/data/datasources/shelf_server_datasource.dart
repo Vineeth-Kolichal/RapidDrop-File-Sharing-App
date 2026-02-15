@@ -434,6 +434,15 @@ class ShelfServerDataSource {
       _server = await shelf_io.serve(handler, _ipAddress!, _port);
       // Server is now running
 
+      // Update background notification with connection details
+      if (Platform.isAndroid) {
+        await _backgroundService.updateNotification(
+          ip: _ipAddress!,
+          port: _port,
+          pin: _pin!,
+        );
+      }
+
       return {
         'isRunning': true,
         'ipAddress': _ipAddress,
