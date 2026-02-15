@@ -13,3 +13,5 @@ cp assets/favicon.png android/app/src/main/assets/web/favicon.png
 # ./gradlew assembleRelease
 # cd ..
 flutter run --release
+flutter build apk --release
+

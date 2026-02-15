@@ -13,6 +13,7 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:file_sharing/core/dependency_injection/modules/dio_module.dart'
     as _i286;
 import 'package:file_sharing/core/network/network_client.dart' as _i625;
+import 'package:file_sharing/core/services/background_service.dart' as _i87;
 import 'package:file_sharing/core/services/sharedprefs_services.dart' as _i467;
 import 'package:file_sharing/features/local_server/data/datasources/shelf_server_datasource.dart'
     as _i461;
@@ -70,11 +71,14 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dioModule = _$DioModule();
     gh.lazySingleton<_i361.Dio>(() => dioModule.dioInstance);
+    gh.lazySingleton<_i87.AppBackgroundService>(
+      () => _i87.AppBackgroundService(),
+    );
     gh.lazySingleton<_i467.SharedPrefsServices>(
       () => _i467.SharedPrefsServices(),
     );
     gh.lazySingleton<_i461.ShelfServerDataSource>(
-      () => _i461.ShelfServerDataSource(),
+      () => _i461.ShelfServerDataSource(gh<_i87.AppBackgroundService>()),
     );
     gh.lazySingleton<_i625.NetworkClient>(
       () => _i625.NetworkClient(gh<_i361.Dio>()),

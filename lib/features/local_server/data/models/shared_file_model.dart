@@ -12,6 +12,7 @@ class SharedFileModel extends SharedFile {
     required super.mimeType,
     required super.addedAt,
     super.isUploaded,
+    super.ownerId,
   });
 
   factory SharedFileModel.fromJson(Map<String, dynamic> json) =>
@@ -27,6 +28,7 @@ class SharedFileModel extends SharedFile {
       mimeType: entity.mimeType,
       addedAt: entity.addedAt,
       isUploaded: entity.isUploaded,
+      ownerId: entity.ownerId,
     );
   }
 }
