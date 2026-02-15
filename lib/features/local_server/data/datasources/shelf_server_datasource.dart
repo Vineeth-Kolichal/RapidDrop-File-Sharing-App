@@ -12,10 +12,18 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../models/shared_file_model.dart';
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'package:file_sharing/core/services/background_service.dart';
 
 @LazySingleton()
 @injectable
 class ShelfServerDataSource {
+  final AppBackgroundService _backgroundService;
+
+  ShelfServerDataSource(this._backgroundService);
+
   HttpServer? _server;
   final List<SharedFileModel> _sharedFiles = [];
   String? _ipAddress;
@@ -29,6 +37,39 @@ class ShelfServerDataSource {
 
   Future<Map<String, dynamic>> startServer() async {
     try {
+      // Start background service
+      if (Platform.isAndroid) {
+        await _backgroundService.startService();
+      }
+
+      // Enable Wakelock to keep CPU/Screen awake
+      // This helps in keeping the main isolate active
+      try {
+        WakelockPlus.enable();
+      } catch (e) {
+        print('Failed to enable wakelock in Datasource: $e');
+      }
+
+      // Request to ignore battery optimizations & Notifications
+      if (Platform.isAndroid) {
+        // Battery
+        final batteryStatus = await Permission.ignoreBatteryOptimizations
+            .request();
+        if (batteryStatus.isGranted) {
+          print('Battery optimizations ignored');
+        } else {
+          print('Battery optimizations NOT ignored');
+        }
+
+        // Notifications (Android 13+) - Required for Foreground Service
+        final notificationStatus = await Permission.notification.request();
+        if (notificationStatus.isGranted) {
+          print('Notification permission granted');
+        } else {
+          print('Notification permission DENIED');
+        }
+      }
+
       // Get WiFi IP address
       final networkInfo = NetworkInfo();
       _ipAddress = await networkInfo.getWifiIP();
@@ -416,6 +457,18 @@ class ShelfServerDataSource {
       client.sink.close();
     }
     _clients.clear();
+
+    // Stop background service
+    if (Platform.isAndroid) {
+      await _backgroundService.stopService();
+    }
+
+    // Disable Wakelock
+    try {
+      WakelockPlus.disable();
+    } catch (e) {
+      print('Failed to disable wakelock in Datasource: $e');
+    }
   }
 
   Map<String, dynamic> getServerInfo() {
